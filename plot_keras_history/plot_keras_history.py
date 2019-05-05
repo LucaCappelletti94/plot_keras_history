@@ -8,18 +8,23 @@ def plot_history_graph(axis, history:Dict[str, List[float]], metric:str, run_kin
             run_kind=run_kind,
             value=history[metric][-1]))
 
-def get_figsize(n:int, _max:int=4):
-    return min(n, _max), math.ceil(n/_max)
+def get_figsize(n:int, graphs_per_row:int):
+    return min(n, graphs_per_row), math.ceil(n/graphs_per_row)
 
-def plot_history(history:Dict[str, List[float]], side:int=5):
+def plot_history(history:Dict[str, List[float]], side:float=5, graphs_per_row:int=4):
+    """Plot given training history.
+        history:Dict[str, List[float]], the history to plot
+        side:int=5, the side of every sub-graph
+        graphs_per_row:int=4, number of graphs per row
+    """
     metrics = [metric for metric in history if not metric.startswith("val_")]
     n = len(metrics)
-    w, h = get_figsize(n)
+    w, h = get_figsize(n, graphs_per_row)
     _, axes = plt.subplots(h, n, figsize=(side*w,(side-1)*h))
     for axis, metric in zip(axes, metrics):
         plot_history_graph(axis, history, metric, "Training")
         plot_history_graph(axis, history, "val_{metric}".format(metric=metric), "Testing")
         axis.set_title(metric)
-        axis.set_ylabel("Value")
         axis.set_xlabel('Epochs')
         axis.legend()
+    plt.suptitle("History after {epochs} epochs".format(epochs=len(history["loss"])))
