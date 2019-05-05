@@ -5,6 +5,8 @@ Plot_keras_history
 
 A simple python package to print a keras NN training history.
 
+|example|
+
 How do I get it?
 ----------------
 Just type into your terminal:
@@ -26,6 +28,7 @@ Usage example
     history = json.load(open("tests/history.json", "r"))
     plot_history(history)
     plt.savefig('history.png')
+
 
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/plot_keras_history.png
@@ -50,3 +53,5 @@ Usage example
 
 .. |pip| image:: https://badge.fury.io/py/plot_keras_history.svg
     :target: https://badge.fury.io/py/plot_keras_history
+
+.. |example| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/history.png?raw=true
