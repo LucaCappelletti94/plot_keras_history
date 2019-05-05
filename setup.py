@@ -29,6 +29,13 @@ def find_version(*file_paths):
 
 __version__ = find_version("plot_keras_history", "__version__.py")
 
+test_deps = ['pytest', 'pytest-cov', 'coveralls']
+
+extras = {
+    'test': test_deps,
+}
+
+
 setup(
     name='plot_keras_history',
 
@@ -81,5 +88,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         "matplotlib"
-    ]
+    ],
+    tests_require=test_deps,
+    extras_require=extras,
 )

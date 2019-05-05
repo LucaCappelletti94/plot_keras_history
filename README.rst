@@ -41,7 +41,7 @@ A simple handy function the package makes available is `chain_histories`, to (yo
     first_history = model.fit(...).history
     second_history = model.fit(...).history
 
-    complete_history = chain_histories(first_history, second_history
+    complete_history = chain_histories(first_history, second_history)
 
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/plot_keras_history.png

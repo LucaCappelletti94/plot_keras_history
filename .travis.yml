@@ -1,0 +1,37 @@
+dist: trusty
+sudo: false
+env:
+  global:
+    - CC_TEST_REPORTER_ID=15e0fe9b49348551008db1516b9cf6289846dc93063dee1f49aa28f679b602ae
+addons:
+  sonarcloud:
+    organization: "lucacappelletti94-github"
+    token:
+      secure: "PqYsyN+nr3pdvm6bpnOkKBnATVr6cPXHPw+aJkCQ93+OuA1rjVQCw0sZ3L3RQmmcle9xWgnjaeWaOncZo9mHvj7LAqf2OlAa86S6dBGU2q50+fV4zpWQjZb8Tkm5tzuUO8v+TTgipw+tp6KkHzGPnbe8l07jK3YTOT+RYZ+FwvNK3g/TpX3JB8L+3a1JV+jws6nLOE5z/0H+rJO9QY/JIwo4iumsYhzCfrugQZ/Sswj7K0h0why/wN+6UlWNVqGkrTgimx27KHWCg0/E0rsh6oGCT+CR+BRr9wQLswvbXnniHMfOMyIUa1ghF7500Dz0rhjwuMZlukWQOqTG/dW+U42HvuDdfr01CXLGQlmwTeil+AtMyFiT/AuCDw/M7byN12kQ6d7RLoPrppt8/G/o9aBMHos4hjb3onvw+K4a/Lrjb50kGG4PAOmVs6PYbnHQ5gijbDW1B9XtqJKq4Q/nTs2n9qRLHTPEkeIWYyP8XmLCyMFbK+eKb+Tz7uHaE7EzkYlzj2ytyRmepJ0nJ6h8tSceVsrkAZFjZtA5ylaagRrqD8WcHe1/VJ2EiSgg76kzdhpFLHhsYNj6RglfEv7TIgwtxq1cP1B5mXGPn0MJib1VFOJzzUmwsg56PQcbjplmV+qU+cJFSIYkKwHHyKw2x8r/Lt5AfvlzXsifJxPDRks="
+language: python
+python:
+- '3.6'
+jdk:
+- oraclejdk8
+cache:
+  directories:
+  - "$HOME/.sonar/cache"
+before_install:
+- pip install pytest --upgrade -q
+install:
+- pip install .[test]
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+script:
+- pytest --cov=./plot_keras_history --cov-report xml:coverage.xml
+- sonar-scanner
+after_success:
+- coveralls
+
+notifications:
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+  email: false
