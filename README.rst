@@ -33,6 +33,7 @@ Usage example
 Utilities
 --------------------
 A simple handy function the package makes available is `chain_histories`, to (you might have guessed) chain histories.
+
 .. code:: python
 
     from plot_keras_history import chain_histories
