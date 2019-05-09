@@ -24,7 +24,9 @@ def plot_history(history:Dict[str, List[float]], side:float=5, graphs_per_row:in
 
     for axis, metric in zip(axes.flatten(), metrics):
         plot_history_graph(axis, history, metric, "Training")
-        plot_history_graph(axis, history, "val_{metric}".format(metric=metric), "Testing")
+        testing_metric = "val_{metric}".format(metric=metric)
+        if testing_metric in history:
+            plot_history_graph(axis, history, testing_metric, "Testing")
         axis.set_title(metric)
         axis.set_xlabel('Epochs')
         axis.legend()
