@@ -20,8 +20,9 @@ def plot_history(history:Dict[str, List[float]], side:float=5, graphs_per_row:in
     metrics = [metric for metric in history if not metric.startswith("val_")]
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
-    _, axes = plt.subplots(h, n, figsize=(side*w,(side-1)*h))
-    for axis, metric in zip(axes, metrics):
+    _, axes = plt.subplots(h, w, figsize=(side*w,(side-1)*h))
+
+    for axis, metric in zip(axes.flatten(), metrics):
         plot_history_graph(axis, history, metric, "Training")
         plot_history_graph(axis, history, "val_{metric}".format(metric=metric), "Testing")
         axis.set_title(metric)
