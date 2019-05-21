@@ -1,0 +1,6 @@
+matplotlib
+
+[test]
+pytest
+pytest-cov
+coveralls
