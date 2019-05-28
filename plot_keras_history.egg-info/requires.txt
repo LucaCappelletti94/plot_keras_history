@@ -1,4 +1,5 @@
 matplotlib
+scipy
 
 [test]
 pytest
