@@ -36,7 +36,7 @@ def plot_history(history: Dict[str, List[float]], interpolate:bool=False, side: 
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
     _, axes = plt.subplots(h, w, figsize=(side*w, (side-1)*h))
-    flat_axes = iter(axes.flatten())
+    flat_axes = iter(np.array(axes).flatten())
 
 
     for metric, axis in zip(metrics, flat_axes):
