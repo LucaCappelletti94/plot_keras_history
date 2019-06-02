@@ -1,70 +1,61 @@
-Plot_keras_history
-=============================
-
-|travis| |coveralls| |sonar_quality| |sonar_maintainability| |code_climate_maintainability| |code_climate_test_coverage| |pip|
+plot_keras_history
+=========================================================================================
+|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip| |downloads|
 
 A simple python package to print a keras NN training history.
 
-|example|
-
-How do I get it?
-----------------
-Just type into your terminal:
+How do I install this package?
+----------------------------------------------
+As usual, just download it using pip:
 
 .. code:: shell
 
-   pip install plot_keras_history
+    pip install plot_keras_history
 
+Tests Coverage
+----------------------------------------------
+Since some software handling coverages sometime get slightly different results, here's three of them:
 
-Usage example
---------------
+|coveralls| |sonar_coverage| |code_climate_coverage|
 
-.. code:: python
-
-    import matplotlib.pyplot as plt
-    from plot_keras_history import plot_history
-    import json
-
-    history = json.load(open("tests/history.json", "r"))
-    plot_history(history)
-    plt.savefig('history.png')
-
-
-Utilities
---------------------
-A simple handy function the package makes available is `chain_histories`, to (you might have guessed) chain histories.
-
-.. code:: python
-
-    from plot_keras_history import chain_histories
-
-    first_history = model.fit(...).history
-    second_history = model.fit(...).history
-
-    complete_history = chain_histories(first_history, second_history)
-
+AFTER
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/plot_keras_history.png
    :target: https://travis-ci.org/LucaCappelletti94/plot_keras_history
+   :alt: Travis CI build
+
+.. |sonar_quality| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_plot_keras_history&metric=alert_status
+    :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_plot_keras_history
+    :alt: SonarCloud Quality
+
+.. |sonar_maintainability| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_plot_keras_history&metric=sqale_rating
+    :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_plot_keras_history
+    :alt: SonarCloud Maintainability
+
+.. |sonar_coverage| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_plot_keras_history&metric=coverage
+    :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_plot_keras_history
+    :alt: SonarCloud Coverage
 
 .. |coveralls| image:: https://coveralls.io/repos/github/LucaCappelletti94/plot_keras_history/badge.svg?branch=master
-    :target: https://coveralls.io/github/LucaCappelletti94/plot_keras_history
-
-.. |sonar_quality| image:: https://sonarcloud.io/api/project_badges/measure?project=plot_keras_history.lucacappelletti&metric=alert_status
-    :target: https://sonarcloud.io/dashboard/index/plot_keras_history.lucacappelletti
-
-.. |sonar_maintainability| image:: https://sonarcloud.io/api/project_badges/measure?project=plot_keras_history.lucacappelletti&metric=sqale_rating
-    :target: https://sonarcloud.io/dashboard/index/plot_keras_history.lucacappelletti
-
-.. |code_climate_maintainability| image:: https://api.codeclimate.com/v1/badges/25fb7c6119e188dbd12c/maintainability
-   :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/maintainability
-   :alt: Maintainability
-
-.. |code_climate_test_coverage| image:: https://api.codeclimate.com/v1/badges/25fb7c6119e188dbd12c/test_coverage
-   :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/test_coverage
-   :alt: Test Coverage
+    :target: https://coveralls.io/github/LucaCappelletti94/plot_keras_history?branch=master
+    :alt: Coveralls Coverage
 
 .. |pip| image:: https://badge.fury.io/py/plot_keras_history.svg
     :target: https://badge.fury.io/py/plot_keras_history
+    :alt: Pypi project
 
-.. |example| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/history.png?raw=true
+.. |downloads| image:: https://pepy.tech/badge/plot_keras_history
+    :target: https://pepy.tech/badge/plot_keras_history
+    :alt: Pypi total project downloads 
+
+.. |codacy|  image:: https://api.codacy.com/project/badge/Grade/4f09666f140a4fc785fecc94b0ed9a6a
+    :target: https://www.codacy.com/app/LucaCappelletti94/plot_keras_history?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LucaCappelletti94/plot_keras_history&amp;utm_campaign=Badge_Grade
+    :alt: Codacy Maintainability
+
+.. |code_climate_maintainability| image:: https://api.codeclimate.com/v1/badges/5540f8112de448ac3298/maintainability
+    :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/maintainability
+    :alt: Maintainability
+
+.. |code_climate_coverage| image:: https://api.codeclimate.com/v1/badges/5540f8112de448ac3298/test_coverage
+    :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/test_coverage
+    :alt: Code Climate Coverate
