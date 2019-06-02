@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 from typing import List, Dict
 import math
 import numpy as np

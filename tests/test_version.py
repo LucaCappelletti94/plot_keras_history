@@ -1,6 +1,6 @@
 from plot_keras_history.__version__ import __version__
-import re
+from validate_version_code import validate_version_code
 
 
 def test_version():
-    assert re.compile(r"\d+\.\d+\.\d+").match(__version__)
+    assert validate_version_code(__version__)
