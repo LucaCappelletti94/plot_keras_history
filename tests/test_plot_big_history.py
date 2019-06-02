@@ -2,9 +2,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from plot_keras_history import plot_history
-import json
+import pandas as pd
 
 def test_plot_big_history():
-    plot_history(json.load(open("tests/big_history.json", "r")))
+    history = pd.read_csv("tests/big_history.csv")
+    plot_history({
+        m: history[m].values for m in history.columns
+    }, interpolate=True)
     plt.savefig("test_plot_big_history.png")
     plt.close()
