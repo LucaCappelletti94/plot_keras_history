@@ -18,7 +18,22 @@ Since some software handling coverages sometime get slightly different results, 
 
 |coveralls| |sonar_coverage| |code_climate_coverage|
 
-AFTER
+Examples
+------------------------------------------------
+Here's how two histories can be visualized:
+
+.. code:: python
+
+    from plot_keras_history import plot_history
+    import matplolib.pyplot as plt
+
+    history = model.fit(...).history
+    plot_history(history)
+    plt.show()
+
+.. image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/test_plot_big_history.png?raw=true
+.. image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/test_plot_history.png?raw=true
+
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/plot_keras_history.png
    :target: https://travis-ci.org/LucaCappelletti94/plot_keras_history
