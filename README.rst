@@ -1,6 +1,6 @@
 plot_keras_history
 =========================================================================================
-|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip| |downloads|
+|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip|
 
 A simple python package to print a keras NN training history.
 
