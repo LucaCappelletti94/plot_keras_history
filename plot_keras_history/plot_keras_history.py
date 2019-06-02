@@ -45,7 +45,8 @@ def plot_history(history: Dict[str, List[float]], interpolate:bool=False, side: 
         if testing_metric in history:
             plot_history_graph(axis, history[testing_metric], interpolate, "Testing")
         axis.set_title(get_alias(metric))
-        # axis.set_xlabel('Epochs')
+        if n <= graphs_per_row:
+            axis.set_xlabel('Epochs')
         epochs = len(history[metric])
         if epochs <= 4:
             axis.set_xticks(np.arange(epochs))
