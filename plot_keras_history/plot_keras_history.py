@@ -39,10 +39,10 @@ def plot_history(history: Dict[str, List[float]], interpolate:bool=False, side: 
 
 
     for metric, axis in zip(metrics, flat_axes):
-        plot_history_graph(axis, history[metric], interpolate, "Training")
+        plot_history_graph(axis, history[metric], "Training", interpolate)
         testing_metric = "val_{metric}".format(metric=metric)
         if testing_metric in history:
-            plot_history_graph(axis, history[testing_metric], interpolate, "Testing")
+            plot_history_graph(axis, history[testing_metric], "Testing", interpolate)
         axis.set_title(get_alias(metric))
         if n <= graphs_per_row:
             axis.set_xlabel('Epochs')
