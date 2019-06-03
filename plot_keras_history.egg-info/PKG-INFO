@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: plot-keras-history
-Version: 1.1.6
+Version: 1.1.9
 Summary: A simple python package to print a keras NN training history.
 Home-page: https://github.com/LucaCappelletti94/plot_keras_history
 Author: Luca Cappelletti

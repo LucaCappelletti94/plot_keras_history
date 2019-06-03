@@ -5,9 +5,6 @@ from plot_keras_history import plot_history
 import pandas as pd
 
 def test_plot_big_history():
-    history = pd.read_csv("tests/big_history.csv")
-    plot_history({
-        m: history[m].values for m in history.columns
-    }, interpolate=True)
+    plot_history(pd.read_csv("tests/big_history.csv", index_col=0))
     plt.savefig("test_plot_big_history.png")
     plt.close()
