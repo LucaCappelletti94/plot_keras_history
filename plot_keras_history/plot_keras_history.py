@@ -24,20 +24,20 @@ def get_figsize(n: int, graphs_per_row: int)->Tuple[int, int]:
     return min(n, graphs_per_row), math.ceil(n/graphs_per_row)
 
 
-def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None):
+def _plot_history(history: pd.DataFrame, interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None):
     """Plot given training history.
-        history:Dict[str, List[float]], the history to plot.
+        history:pd.DataFrame, the history to plot.
         interpolate:bool=False, whetever to reduce the graphs noise.
         side:int=5, the side of every sub-graph.
         graphs_per_row:int=4, number of graphs per row.
         customization_callback:Callable=None, callback for customising axis.
+        path:str=None, where to save the graphs, by defalut nowhere.
     """
-    if not isinstance(history, pd.DataFrame):
-        history = pd.DataFrame(history)
     x_label = "Epochs" if history.index.name is None else history.index.name
     metrics = [m for m in history if not m.startswith("val_")]
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
+    print(w, h)
     _, axes = plt.subplots(h, w, figsize=(side*w, side*h))
     flat_axes = iter(np.array(axes).flatten())
     for metric, axis in zip(metrics, flat_axes):
@@ -62,3 +62,28 @@ def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], interpola
         axis.axis("off")
 
     plt.tight_layout()
+    plt.show()
+    if path is not None:
+        plt.savefig(path)
+
+
+def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
+    """Plot given training history.
+        history:Union[Dict[str, List[float]], pd.DataFrame], the history to plot.
+        interpolate:bool=False, whetever to reduce the graphs noise.
+        side:int=5, the side of every sub-graph.
+        graphs_per_row:int=4, number of graphs per row.
+        customization_callback:Callable=None, callback for customising axis.
+        path:str=None, where to save the graphs, by defalut nowhere.
+        single_graphs:bool=False, whetever to create the graphs one by one.
+    """
+    if not isinstance(history, pd.DataFrame):
+        history = pd.DataFrame(history)
+    if single_graphs:
+        for columns in [[c] if "val_{c}".format(c=c) not in history else [c,  "val_{c}".format(c=c)] for c in history  if not c.startswith("val_")]:
+            print(columns)
+            _plot_history(history[columns], interpolate, side, graphs_per_row,
+                          customization_callback, "{path}/{c}.png".format(path=path, c=columns[0]))
+    else:
+        _plot_history(history, interpolate, side, graphs_per_row,
+                          customization_callback, path)
