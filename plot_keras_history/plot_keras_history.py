@@ -24,9 +24,10 @@ def get_figsize(n: int, graphs_per_row: int)->Tuple[int, int]:
     return min(n, graphs_per_row), math.ceil(n/graphs_per_row)
 
 
-def _plot_history(history: pd.DataFrame, interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None):
+def _plot_history(history: pd.DataFrame, style:str="-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None):
     """Plot given training history.
         history:pd.DataFrame, the history to plot.
+        style:str="-", the style to use when plotting the graphs.
         interpolate:bool=False, whetever to reduce the graphs noise.
         side:int=5, the side of every sub-graph.
         graphs_per_row:int=4, number of graphs per row.
@@ -46,6 +47,7 @@ def _plot_history(history: pd.DataFrame, interpolate: bool = False, side: float 
                 axis.plot(
                     col.index,
                     filter_signal(col.values) if interpolate else col.values,
+                    style,
                     label='{kind}: {val:0.4f}'.format(kind=kind, val=col.iloc[-1]))
         alias = get_alias(metric)
         axis.set_xlabel(x_label)
@@ -65,9 +67,10 @@ def _plot_history(history: pd.DataFrame, interpolate: bool = False, side: float 
         plt.savefig(path)
 
 
-def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
+def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], style:str="-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
     """Plot given training history.
         history:Union[Dict[str, List[float]], pd.DataFrame], the history to plot.
+        style:str="-", the style to use when plotting the graphs.
         interpolate:bool=False, whetever to reduce the graphs noise.
         side:int=5, the side of every sub-graph.
         graphs_per_row:int=4, number of graphs per row.
@@ -79,8 +82,8 @@ def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], interpola
         history = pd.DataFrame(history)
     if single_graphs:
         for columns in [[c] if "val_{c}".format(c=c) not in history else [c,  "val_{c}".format(c=c)] for c in history  if not c.startswith("val_")]:
-            _plot_history(history[columns], interpolate, side, graphs_per_row,
+            _plot_history(history[columns], style, interpolate, side, graphs_per_row,
                           customization_callback, "{path}/{c}.png".format(path=path, c=columns[0]))
     else:
-        _plot_history(history, interpolate, side, graphs_per_row,
+        _plot_history(history, style, interpolate, side, graphs_per_row,
                           customization_callback, path)
