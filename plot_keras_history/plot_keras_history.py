@@ -37,7 +37,6 @@ def _plot_history(history: pd.DataFrame, interpolate: bool = False, side: float 
     metrics = [m for m in history if not m.startswith("val_")]
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
-    print(w, h)
     _, axes = plt.subplots(h, w, figsize=(side*w, side*h))
     flat_axes = iter(np.array(axes).flatten())
     for metric, axis in zip(metrics, flat_axes):
@@ -62,7 +61,6 @@ def _plot_history(history: pd.DataFrame, interpolate: bool = False, side: float 
         axis.axis("off")
 
     plt.tight_layout()
-    plt.show()
     if path is not None:
         plt.savefig(path)
 
@@ -81,7 +79,6 @@ def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], interpola
         history = pd.DataFrame(history)
     if single_graphs:
         for columns in [[c] if "val_{c}".format(c=c) not in history else [c,  "val_{c}".format(c=c)] for c in history  if not c.startswith("val_")]:
-            print(columns)
             _plot_history(history[columns], interpolate, side, graphs_per_row,
                           customization_callback, "{path}/{c}.png".format(path=path, c=columns[0]))
     else:
