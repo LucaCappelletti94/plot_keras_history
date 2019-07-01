@@ -147,5 +147,5 @@ Numerous additional metrics are available in `extra_keras_metrics <https://githu
     :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/test_coverage
     :alt: Code Climate Coverate
 
-.. |standard| image:: https://api.codeclimate.com/v1/badges/5540f8112de448ac3298/test_coverage
-.. |interpolated| image:: https://api.codeclimate.com/v1/badges/5540f8112de448ac3298/test_coverage
+.. |standard| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/normal.png?raw=true
+.. |interpolated| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/interpolated.png?raw=true
