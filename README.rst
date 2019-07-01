@@ -103,7 +103,7 @@ It's common to stop and restart a model's training, and this would break the his
     history2 = model.fit(...).history
     history = chain_histories(history1, history2)
 
-FAQs and suggestions
+Extras
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Numerous additional metrics are available in `extra_keras_metrics <https://github.com/LucaCappelletti94/extra_keras_metrics>`_
 
