@@ -1,6 +1,6 @@
 Plot Keras History
 =========================================================================================
-|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip| |downloads|
+|travis| |sonar_quality| |sonar_maintainability| |codacy| |pip| |downloads|
 
 A python package to print a `Keras model training history <https://keras.io/callbacks/#history>`_
 
