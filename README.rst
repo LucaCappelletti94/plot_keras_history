@@ -1,6 +1,6 @@
 Plot Keras History
 =========================================================================================
-|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip|
+|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip| |downloads|
 
 A python package to print a `Keras model training history <https://keras.io/callbacks/#history>`_
 
@@ -127,12 +127,12 @@ Numerous additional metrics are available in `extra_keras_metrics <https://githu
     :target: https://coveralls.io/github/LucaCappelletti94/plot_keras_history?branch=master
     :alt: Coveralls Coverage
 
-.. |pip| image:: https://badge.fury.io/py/plot_keras_history.svg
+.. |pip| image:: https://badge.fury.io/py/plot-keras-history.svg
     :target: https://badge.fury.io/py/plot_keras_history
     :alt: Pypi project
 
-.. |downloads| image:: https://pepy.tech/badge/plot_keras_history
-    :target: https://pepy.tech/badge/plot_keras_history
+.. |downloads| image:: https://pepy.tech/badge/plot-keras-history
+    :target: https://pepy.tech/badge/plot-keras-history
     :alt: Pypi total project downloads 
 
 .. |codacy|  image:: https://api.codacy.com/project/badge/Grade/4f09666f140a4fc785fecc94b0ed9a6a
