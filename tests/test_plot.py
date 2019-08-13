@@ -20,3 +20,10 @@ def test_plot():
     plt.close()
     plot_history(df, path="plots/interpolated.png", interpolate=True)
     plt.close()
+    plot_history([
+        pd.read_csv("tests/history1.csv"),
+        pd.read_csv("tests/history2.csv"),
+        pd.read_csv("tests/history4.csv"),
+        pd.read_csv("tests/history3.csv")
+    ], path="plots/multiple.png", interpolate=True)
+    plt.close()

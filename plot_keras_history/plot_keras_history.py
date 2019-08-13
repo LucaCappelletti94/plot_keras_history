@@ -14,19 +14,19 @@ def get_alias(label: str):
     return label
 
 
-def filter_signal(y: List[float], window: int = 17, polyorder: int = 3)->List[float]:
+def filter_signal(y: List[float], window: int = 17, polyorder: int = 3) -> List[float]:
     if len(y) < window:
         return y
     return savgol_filter(y, window, polyorder)
 
 
-def get_figsize(n: int, graphs_per_row: int)->Tuple[int, int]:
+def get_figsize(n: int, graphs_per_row: int) -> Tuple[int, int]:
     return min(n, graphs_per_row), math.ceil(n/graphs_per_row)
 
 
-def _plot_history(history: pd.DataFrame, style:str="-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None):
-    """Plot given training history.
-        history:pd.DataFrame, the history to plot.
+def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None):
+    """Plot given training histories.
+        histories:pd.DataFrame, the histories to plot.
         style:str="-", the style to use when plotting the graphs.
         interpolate:bool=False, whetever to reduce the graphs noise.
         side:int=5, the side of every sub-graph.
@@ -34,21 +34,38 @@ def _plot_history(history: pd.DataFrame, style:str="-", interpolate: bool = Fals
         customization_callback:Callable=None, callback for customising axis.
         path:str=None, where to save the graphs, by defalut nowhere.
     """
-    x_label = "Epochs" if history.index.name is None else history.index.name
-    metrics = [m for m in history if not m.startswith("val_")]
+    x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
+    metrics = [m for m in histories[0] if not m.startswith("val_")]
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
     _, axes = plt.subplots(h, w, figsize=(side*w, side*h))
-    flat_axes = iter(np.array(axes).flatten())
+    flat_axes = np.array(axes).flatten()
+
+    average_history = pd.concat(histories)
+    average_history= average_history.groupby(average_history.index).mean()
+
+    for i, history in enumerate([average_history] + histories):
+        for metric, axis in zip(metrics, flat_axes):
+            for name, kind in zip((metric, f"val_{metric}"), ("Train", "Test")):
+                if name in history:
+                    col = history[name]
+                    if i==0:
+                        axis.plot(
+                            col.index,
+                            filter_signal(col.values) if interpolate else col.values,
+                            style,
+                            label='{kind}: {val:0.4f}'.format(kind=kind, val=col.iloc[-1]),
+                            zorder=10000
+                        )
+                    else:
+                        axis.plot(
+                            col.index,
+                            filter_signal(col.values) if interpolate else col.values,
+                            style,
+                            alpha=0.2
+                        )
+
     for metric, axis in zip(metrics, flat_axes):
-        for name, kind in zip((metric, "val_{metric}".format(metric=metric)), ("Train", "Test")):
-            if name in history:
-                col = history[name]
-                axis.plot(
-                    col.index,
-                    filter_signal(col.values) if interpolate else col.values,
-                    style,
-                    label='{kind}: {val:0.4f}'.format(kind=kind, val=col.iloc[-1]))
         alias = get_alias(metric)
         axis.set_xlabel(x_label)
         axis.set_ylabel(alias)
@@ -59,7 +76,7 @@ def _plot_history(history: pd.DataFrame, style:str="-", interpolate: bool = Fals
         if customization_callback is not None:
             customization_callback(axis)
 
-    for axis in flat_axes:
+    for axis in flat_axes[len(metrics):]:
         axis.axis("off")
 
     plt.tight_layout()
@@ -67,9 +84,17 @@ def _plot_history(history: pd.DataFrame, style:str="-", interpolate: bool = Fals
         plt.savefig(path)
 
 
-def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], style:str="-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
-    """Plot given training history.
-        history:Union[Dict[str, List[float]], pd.DataFrame], the history to plot.
+def _get_columns(history: pd.DataFrame) -> List[str]:
+    return [[c] if f"val_{c}" not in history else [c,  f"val_{c}"] for c in history if not c.startswith("val_")]
+
+
+def filter_column(histories:List[str], columns:List[str])->List[pd.DataFrame]:
+    return [history[columns] for history in histories]
+
+
+def plot_history(histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame]], style: str = "-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
+    """Plot given training histories.
+        histories:Union[Dict[str, List[float]], pd.DataFrame], the histories to plot.
         style:str="-", the style to use when plotting the graphs.
         interpolate:bool=False, whetever to reduce the graphs noise.
         side:int=5, the side of every sub-graph.
@@ -78,12 +103,22 @@ def plot_history(history: Union[Dict[str, List[float]], pd.DataFrame], style:str
         path:str=None, where to save the graphs, by defalut nowhere.
         single_graphs:bool=False, whetever to create the graphs one by one.
     """
-    if not isinstance(history, pd.DataFrame):
-        history = pd.DataFrame(history)
+    if not isinstance(histories, list):
+        histories = [histories]
+    histories = [
+        pd.DataFrame(history) if not isinstance(history, pd.DataFrame) else history for history in histories
+    ]
     if single_graphs:
-        for columns in [[c] if "val_{c}".format(c=c) not in history else [c,  "val_{c}".format(c=c)] for c in history  if not c.startswith("val_")]:
-            _plot_history(history[columns], style, interpolate, side, graphs_per_row,
-                          customization_callback, "{path}/{c}.png".format(path=path, c=columns[0]))
+        for columns in _get_columns(histories[0]):
+            _plot_history(
+                filter_column(histories, columns),
+                style,
+                interpolate,
+                side,
+                graphs_per_row,
+                customization_callback,
+                "{path}/{c}.png".format(path=path, c=columns[0])
+            )
     else:
-        _plot_history(history, style, interpolate, side, graphs_per_row,
-                          customization_callback, path)
+        _plot_history(histories, style, interpolate, side, graphs_per_row,
+                      customization_callback, path)
