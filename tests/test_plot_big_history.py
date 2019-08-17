@@ -6,6 +6,6 @@ import os
 import pandas as pd
 
 def test_plot_big_history():
-    plot_history(pd.read_csv("tests/big_history.csv", index_col=0))
+    plot_history(pd.read_csv("tests/big_history.csv", index_col=0),  path="plots/big_history.png")
     plt.close()
-    
+    assert os.path.exists("plots/big_history.png")

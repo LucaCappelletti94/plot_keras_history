@@ -46,25 +46,28 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
     flat_axes = np.array(axes).flatten()
 
     average_history = pd.concat(histories)
-    average_history= average_history.groupby(average_history.index).mean()
+    average_history = average_history.groupby(average_history.index).mean()
 
     for i, history in enumerate([average_history] + histories):
         for metric, axis in zip(metrics, flat_axes):
             for name, kind in zip((metric, f"val_{metric}"), ("Train", "Test")):
                 if name in history:
                     col = history[name]
-                    if i==0:
+                    if i == 0:
                         axis.plot(
-                            col.index.values,  
-                            filter_signal(col.values) if interpolate else col.values,
+                            col.index.values,
+                            filter_signal(
+                                col.values) if interpolate else col.values,
                             style,
-                            label='{kind}: {val:0.4f}'.format(kind=kind, val=col.iloc[-1]),
+                            label='{kind}: {val:0.4f}'.format(
+                                kind=kind, val=col.iloc[-1]),
                             zorder=10000
                         )
                     else:
                         axis.plot(
                             col.index.values,
-                            filter_signal(col.values) if interpolate else col.values,
+                            filter_signal(
+                                col.values) if interpolate else col.values,
                             style,
                             alpha=0.2
                         )
@@ -92,7 +95,7 @@ def _get_columns(history: pd.DataFrame) -> List[str]:
     return [[c] if f"val_{c}" not in history else [c,  f"val_{c}"] for c in history if not c.startswith("val_")]
 
 
-def filter_column(histories:List[str], columns:List[str])->List[pd.DataFrame]:
+def filter_column(histories: List[str], columns: List[str]) -> List[pd.DataFrame]:
     return [history[columns] for history in histories]
 
 
