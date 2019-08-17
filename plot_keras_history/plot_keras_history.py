@@ -55,7 +55,7 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
                     col = history[name]
                     if i==0:
                         axis.plot(
-                            col.index,
+                            col.index.values,  
                             filter_signal(col.values) if interpolate else col.values,
                             style,
                             label='{kind}: {val:0.4f}'.format(kind=kind, val=col.iloc[-1]),
@@ -63,7 +63,7 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
                         )
                     else:
                         axis.plot(
-                            col.index,
+                            col.index.values,
                             filter_signal(col.values) if interpolate else col.values,
                             style,
                             alpha=0.2
