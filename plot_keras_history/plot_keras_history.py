@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from typing import List, Dict, Union, Tuple, Callable
+import os
 import math
 import numpy as np
 import pandas as pd
@@ -15,6 +16,9 @@ def get_alias(label: str):
 
 
 def filter_signal(y: List[float], window: int = 17, polyorder: int = 3) -> List[float]:
+    window = max(7, min(window, len(y)))
+    if window % 2 == 0:
+        window -= 1
     if len(y) < window:
         return y
     return savgol_filter(y, window, polyorder)
@@ -94,7 +98,7 @@ def filter_column(histories:List[str], columns:List[str])->List[pd.DataFrame]:
 
 def plot_history(histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame]], style: str = "-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
     """Plot given training histories.
-        histories:Union[Dict[str, List[float]], pd.DataFrame], the histories to plot.
+        histories:Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame]], the histories to plot.
         style:str="-", the style to use when plotting the graphs.
         interpolate:bool=False, whetever to reduce the graphs noise.
         side:int=5, the side of every sub-graph.
@@ -105,6 +109,8 @@ def plot_history(histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.
     """
     if not isinstance(histories, list):
         histories = [histories]
+    if path is not None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
     histories = [
         pd.DataFrame(history) if not isinstance(history, pd.DataFrame) else history for history in histories
     ]
