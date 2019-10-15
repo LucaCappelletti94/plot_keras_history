@@ -66,10 +66,9 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
                     else:
                         axis.plot(
                             col.index.values,
-                            filter_signal(
-                                col.values) if interpolate else col.values,
+                            filter_signal(col.values) if interpolate else col.values,
                             style,
-                            alpha=0.2
+                            alpha=0.3
                         )
 
     for metric, axis in zip(metrics, flat_axes):
@@ -77,7 +76,10 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
         axis.set_xlabel(x_label)
         axis.set_ylabel(alias)
         axis.set_title(alias)
+        axis.grid(True)
         axis.legend()
+        if metric in ("auprc", "auroc", "acc"):
+            axis.set_ylim(-0.05, 1.05)
         if history.shape[0] <= 4:
             axis.set_xticks(range(history.shape[0]))
         if customization_callback is not None:
@@ -113,7 +115,9 @@ def plot_history(histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.
     if not isinstance(histories, list):
         histories = [histories]
     if path is not None:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        dirname = os.path.dirname(path)
+        if dirname:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
     histories = [
         pd.DataFrame(history) if not isinstance(history, pd.DataFrame) else history for history in histories
     ]
