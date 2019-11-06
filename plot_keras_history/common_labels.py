@@ -1,6 +1,6 @@
 common_labels = {
     "Learning rate":["lr"],
-    "Accuracy":["acc"],
+    "Accuracy":["acc", "accuracy"],
     "Loss":["loss"],
     "AUPRC":["auprc"],
     "AUROC":["auroc"]

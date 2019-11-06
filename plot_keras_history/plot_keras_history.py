@@ -78,7 +78,7 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
         axis.set_title(alias)
         axis.grid(True)
         axis.legend()
-        if metric in ("auprc", "auroc", "acc"):
+        if metric in ("auprc", "auroc", "acc", "accuracy"):
             axis.set_ylim(-0.05, 1.05)
         if history.shape[0] <= 4:
             axis.set_xticks(range(history.shape[0]))
