@@ -11,5 +11,5 @@ def test_chain_histories():
     )
     pd.testing.assert_frame_equal(
         pd.DataFrame(double_history),
-        chain_histories(history, history)
+        chain_histories(pd.DataFrame(history), history)
     )
