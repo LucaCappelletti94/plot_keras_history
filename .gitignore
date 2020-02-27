@@ -10,3 +10,7 @@ __pycache__/
 \.DS_Store
 
 \.vscode/
+.pytest_cache
+build
+plot_keras_history.egg-info
+.coverage*
