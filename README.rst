@@ -128,7 +128,7 @@ Numerous additional metrics are available in `extra_keras_metrics <https://githu
     :alt: Coveralls Coverage
 
 .. |pip| image:: https://badge.fury.io/py/plot-keras-history.svg
-    :target: https://badge.fury.io/py/plot_keras_history
+    :target: https://badge.fury.io/py/plot-keras-history
     :alt: Pypi project
 
 .. |downloads| image:: https://pepy.tech/badge/plot-keras-history
