@@ -4,15 +4,8 @@ import os
 import math
 import numpy as np
 import pandas as pd
-from .common_labels import common_labels
 from scipy.signal import savgol_filter
-
-
-def get_alias(label: str):
-    for name, labels in common_labels.items():
-        if label in labels:
-            return name
-    return label
+from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric
 
 
 def filter_signal(y: List[float], window: int = 17, polyorder: int = 3) -> List[float]:
@@ -35,7 +28,8 @@ def _plot_history(
     side: float = 5,
     graphs_per_row: int = 4,
     customization_callback: Callable = None,
-    path: str = None
+    path: str = None,
+    max_epochs: int = None
 ):
     """Plot given training histories.
 
@@ -91,13 +85,13 @@ def _plot_history(
                         )
 
     for metric, axis in zip(metrics, flat_axes):
-        alias = get_alias(metric)
+        alias = sanitize_ml_labels(metric)
         axis.set_xlabel(x_label)
         axis.set_ylabel(alias)
         axis.set_title(alias)
         axis.grid(True)
         axis.legend()
-        if metric in ("auprc", "auroc", "acc", "accuracy"):
+        if is_normalized_metric(metric):
             axis.set_ylim(-0.05, 1.05)
         if history.shape[0] <= 4:
             axis.set_xticks(range(history.shape[0]))
@@ -141,7 +135,8 @@ def plot_history(
     graphs_per_row: int = 4,
     customization_callback: Callable = None,
     path: str = None,
-    single_graphs: bool = False
+    single_graphs: bool = False,
+    max_epochs: Union[int, str] = "max"
 ):
     """Plot given training histories.
 
@@ -165,6 +160,8 @@ def plot_history(
         where to save the graphs, by defalut nowhere.
     single_graphs:bool=False,
         whetever to create the graphs one by one.
+    max_epochs: Union[int, str] = "max",
+        Number of epochs to plot. Can either be "max", "min" or a positive integer value.
     """
     if not isinstance(histories, list):
         histories = [histories]
@@ -175,6 +172,21 @@ def plot_history(
     histories = [
         to_dataframe(history) if not isinstance(history, pd.DataFrame) else history for history in histories
     ]
+    if max_epochs in ("max", "min"):
+        epochs = [
+            len(history)
+            for history in histories
+        ]
+        if max_epochs == "max":
+            max_epochs = max(epochs)
+        if max_epochs == "min":
+            max_epochs = min(epochs)
+
+    histories = [
+        history[:max_epochs]
+        for history in histories
+    ]
+
     if single_graphs:
         for columns in _get_columns(histories[0]):
             _plot_history(
