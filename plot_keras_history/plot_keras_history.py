@@ -28,15 +28,33 @@ def get_figsize(n: int, graphs_per_row: int) -> Tuple[int, int]:
     return min(n, graphs_per_row), math.ceil(n/graphs_per_row)
 
 
-def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None):
+def _plot_history(
+    histories: pd.DataFrame,
+    style: str = "-",
+    interpolate: bool = False,
+    side: float = 5,
+    graphs_per_row: int = 4,
+    customization_callback: Callable = None,
+    path: str = None
+):
     """Plot given training histories.
-        histories:pd.DataFrame, the histories to plot.
-        style:str="-", the style to use when plotting the graphs.
-        interpolate:bool=False, whetever to reduce the graphs noise.
-        side:int=5, the side of every sub-graph.
-        graphs_per_row:int=4, number of graphs per row.
-        customization_callback:Callable=None, callback for customising axis.
-        path:str=None, where to save the graphs, by defalut nowhere.
+
+    Parameters
+    -------------------------------
+    histories:pd.DataFrame,
+        The histories to plot.
+    style:str="-",
+        The style to use when plotting the graphs.
+    interpolate:bool=False,
+        Whetever to reduce the graphs noise.
+    side:int=5,
+        The side of every sub-graph.
+    graphs_per_row:int=4,
+        Number of graphs per row.
+    customization_callback:Callable=None,
+        Callback for customising axis.
+    path:str=None,
+        Where to save the graphs, by defalut nowhere.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
     metrics = [m for m in histories[0] if not m.startswith("val_")]
@@ -66,7 +84,8 @@ def _plot_history(histories: pd.DataFrame, style: str = "-", interpolate: bool =
                     else:
                         axis.plot(
                             col.index.values,
-                            filter_signal(col.values) if interpolate else col.values,
+                            filter_signal(
+                                col.values) if interpolate else col.values,
                             style,
                             alpha=0.3
                         )
@@ -101,16 +120,51 @@ def filter_column(histories: List[str], columns: List[str]) -> List[pd.DataFrame
     return [history[columns] for history in histories]
 
 
-def plot_history(histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame]], style: str = "-", interpolate: bool = False, side: float = 5, graphs_per_row: int = 4, customization_callback: Callable = None, path: str = None, single_graphs: bool = False):
+def to_dataframe(history):
+    if isinstance(history, Dict):
+        return pd.DataFrame(history)
+    if isinstance(history, str):
+        if "csv" in history.split("."):
+            return pd.read_csv(history)
+        if "json" in history.split("."):
+            return pd.read_json(history)
+    raise ValueError("Invalid history term of type {history_type}".format(
+        history_type=type(history)
+    ))
+
+
+def plot_history(
+    histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
+    style: str = "-",
+    interpolate: bool = False,
+    side: float = 5,
+    graphs_per_row: int = 4,
+    customization_callback: Callable = None,
+    path: str = None,
+    single_graphs: bool = False
+):
     """Plot given training histories.
-        histories:Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame]], the histories to plot.
-        style:str="-", the style to use when plotting the graphs.
-        interpolate:bool=False, whetever to reduce the graphs noise.
-        side:int=5, the side of every sub-graph.
-        graphs_per_row:int=4, number of graphs per row.
-        customization_callback:Callable=None, callback for customising axis.
-        path:str=None, where to save the graphs, by defalut nowhere.
-        single_graphs:bool=False, whetever to create the graphs one by one.
+
+    Parameters
+    ----------------------------
+    histories,
+        the histories to plot.
+        This parameter can either be a single or multiple dataframes
+        or one or more paths to the stored CSVs or JSON of the history.
+    style:str="-",
+        the style to use when plotting the graphs.
+    interpolate:bool=False,
+        whetever to reduce the graphs noise.
+    side:int=5,
+        the side of every sub-graph.
+    graphs_per_row:int=4,
+        number of graphs per row.
+    customization_callback:Callable=None,
+        callback for customising axis.
+    path:str=None,
+        where to save the graphs, by defalut nowhere.
+    single_graphs:bool=False,
+        whetever to create the graphs one by one.
     """
     if not isinstance(histories, list):
         histories = [histories]
@@ -119,7 +173,7 @@ def plot_history(histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.
         if dirname:
             os.makedirs(os.path.dirname(path), exist_ok=True)
     histories = [
-        pd.DataFrame(history) if not isinstance(history, pd.DataFrame) else history for history in histories
+        to_dataframe(history) if not isinstance(history, pd.DataFrame) else history for history in histories
     ]
     if single_graphs:
         for columns in _get_columns(histories[0]):
