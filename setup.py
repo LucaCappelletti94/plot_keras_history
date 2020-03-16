@@ -88,7 +88,8 @@ setup(
     install_requires=[
         "matplotlib",
         "pandas",
-        "scipy"
+        "scipy",
+        "sanitize_ml_labels"
     ],
     tests_require=test_deps,
     extras_require=extras,
