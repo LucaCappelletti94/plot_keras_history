@@ -29,7 +29,8 @@ def _plot_history(
     graphs_per_row: int = 4,
     customization_callback: Callable = None,
     path: str = None,
-    max_epochs: int = None
+    max_epochs: int = None,
+    log_scale_metrics: bool = False
 ):
     """Plot given training histories.
 
@@ -49,6 +50,8 @@ def _plot_history(
         Callback for customising axis.
     path:str=None,
         Where to save the graphs, by defalut nowhere.
+    log_scale_metrics: bool = False,
+        Wether to use log scale for the metrics.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
     metrics = [m for m in histories[0] if not m.startswith("val_")]
@@ -87,7 +90,12 @@ def _plot_history(
     for metric, axis in zip(metrics, flat_axes):
         alias = sanitize_ml_labels(metric)
         axis.set_xlabel(x_label)
-        axis.set_ylabel(alias)
+        if log_scale_metrics:
+            axis.set_yscale("log")
+        axis.set_ylabel("{alias}{scale}".format(
+            alias=alias,
+            scale=" (Log scale)" if log_scale_metrics else ""
+        ))
         axis.set_title(alias)
         axis.grid(True)
         axis.legend()
@@ -136,7 +144,8 @@ def plot_history(
     customization_callback: Callable = None,
     path: str = None,
     single_graphs: bool = False,
-    max_epochs: Union[int, str] = "max"
+    max_epochs: Union[int, str] = "max",
+    log_scale_metrics: bool = False
 ):
     """Plot given training histories.
 
@@ -162,6 +171,8 @@ def plot_history(
         whetever to create the graphs one by one.
     max_epochs: Union[int, str] = "max",
         Number of epochs to plot. Can either be "max", "min" or a positive integer value.
+    log_scale_metrics: bool = False,
+        Wether to use log scale for the metrics.
     """
     if not isinstance(histories, list):
         histories = [histories]
@@ -196,8 +207,9 @@ def plot_history(
                 side,
                 graphs_per_row,
                 customization_callback,
-                "{path}/{c}.png".format(path=path, c=columns[0])
+                "{path}/{c}.png".format(path=path, c=columns[0]),
+                log_scale_metrics
             )
     else:
         _plot_history(histories, style, interpolate, side, graphs_per_row,
-                      customization_callback, path)
+                      customization_callback, path, log_scale_metrics)
