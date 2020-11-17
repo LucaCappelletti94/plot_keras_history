@@ -53,7 +53,6 @@ def _plot_history(
     log_scale_metrics: bool = False,
         Wether to use log scale for the metrics.
     """
-    histories = histories._get_numeric_data()
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
     metrics = [m for m in histories[0] if not m.startswith("val_")]
     n = len(metrics)
@@ -123,7 +122,9 @@ def filter_column(histories: List[str], columns: List[str]) -> List[pd.DataFrame
     return [history[columns] for history in histories]
 
 
-def to_dataframe(history):
+def to_dataframe(history)->pd.DataFrame:
+    if isinstance(history, pd.DataFrame):
+        return history
     if isinstance(history, Dict):
         return pd.DataFrame(history)
     if isinstance(history, str):
@@ -182,7 +183,8 @@ def plot_history(
         if dirname:
             os.makedirs(os.path.dirname(path), exist_ok=True)
     histories = [
-        to_dataframe(history) if not isinstance(history, pd.DataFrame) else history for history in histories
+        to_dataframe(history)._get_numeric_data()
+        for history in histories
     ]
     if max_epochs in ("max", "min"):
         epochs = [
