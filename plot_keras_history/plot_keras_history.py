@@ -53,6 +53,7 @@ def _plot_history(
     log_scale_metrics: bool = False,
         Wether to use log scale for the metrics.
     """
+    histories = histories._get_numeric_data()
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
     metrics = [m for m in histories[0] if not m.startswith("val_")]
     n = len(metrics)
