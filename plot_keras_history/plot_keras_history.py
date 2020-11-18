@@ -23,6 +23,7 @@ def get_figsize(n: int, graphs_per_row: int) -> Tuple[int, int]:
 
 def _plot_history(
     histories: pd.DataFrame,
+    average_history: pd.DataFrame = None,
     style: str = "-",
     interpolate: bool = False,
     side: float = 5,
@@ -30,7 +31,10 @@ def _plot_history(
     customization_callback: Callable = None,
     path: str = None,
     max_epochs: int = None,
-    log_scale_metrics: bool = False
+    log_scale_metrics: bool = False,
+    monitor: str = None,
+    best_point_x: int = None,
+    custom_defaults: Dict[str, Union[List[str], str]] = None
 ):
     """Plot given training histories.
 
@@ -38,6 +42,8 @@ def _plot_history(
     -------------------------------
     histories:pd.DataFrame,
         The histories to plot.
+    average_history: pd.DataFrame = None,
+        Average histories, if multiple histories were given.
     style:str="-",
         The style to use when plotting the graphs.
     interpolate:bool=False,
@@ -50,8 +56,16 @@ def _plot_history(
         Callback for customising axis.
     path:str=None,
         Where to save the graphs, by defalut nowhere.
+    monitor: str = None,
+        Metric to use to display best points.
+        For example you may use "loss" or "val_loss".
+        By default None, to not display any best point.
     log_scale_metrics: bool = False,
         Wether to use log scale for the metrics.
+    best_point_x: int = None,
+        Point to be highlighted as best.
+    custom_defaults: Dict[str, Union[List[str], str]] = None,
+        Dictionary of custom mapping to use to sanitize metric names.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
     metrics = [m for m in histories[0] if not m.startswith("val_")]
@@ -60,35 +74,78 @@ def _plot_history(
     _, axes = plt.subplots(h, w, figsize=(side*w, side*h))
     flat_axes = np.array(axes).flatten()
 
-    average_history = pd.concat(histories)
-    average_history = average_history.groupby(average_history.index).mean()
-
     for i, history in enumerate([average_history] + histories):
         for metric, axis in zip(metrics, flat_axes):
-            for name, kind in zip((metric, f"val_{metric}"), ("Train", "Test")):
-                if name in history:
-                    col = history[name]
-                    if i == 0:
-                        axis.plot(
-                            col.index.values,
-                            filter_signal(
-                                col.values) if interpolate else col.values,
-                            style,
-                            label='{kind}: {val:0.4f}'.format(
-                                kind=kind, val=col.iloc[-1]),
+            for name, kind in zip(
+                *(
+                    ((metric, f"val_{metric}"), ("Train", "Test"))
+                    if f"val_{metric}" in history
+                    else ((metric, ), ("", ))
+                )
+            ):
+                col = history[name]
+                if i == 0:
+                    if best_point_x is not None:
+                        best_point_y = col.values[best_point_x]
+                        if len(kind) == 0:
+                            kind = f"Best value ({monitor})"
+                        else:
+                            kind = f"{kind} best value ({monitor})"
+                    else:
+                        best_point_y = col.iloc[-1]
+                        if len(kind) == 0:
+                            kind = f"Last value"
+                        else:
+                            kind = f"{kind} last value"
+
+                    line = axis.plot(
+                        col.index.values,
+                        filter_signal(
+                            col.values) if interpolate else col.values,
+                        style,
+                        label='{kind}: {val:0.4f}'.format(
+                            kind=kind,
+                            val=best_point_y
+                        ),
+                        zorder=10000
+                    )[0]
+                    if best_point_x is not None:
+                        best_point_y = col.values[best_point_x]
+                        axis.scatter(
+                            [best_point_x],
+                            [best_point_y],
+                            s=30,
+                            alpha=0.9,
+                            color=line.get_color(),
                             zorder=10000
                         )
-                    else:
-                        axis.plot(
-                            col.index.values,
-                            filter_signal(
-                                col.values) if interpolate else col.values,
-                            style,
-                            alpha=0.3
+                        axis.hlines(
+                            best_point_y,
+                            0,
+                            best_point_x,
+                            linestyles="dashed",
+                            color=line.get_color(),
+                            alpha=0.5,
                         )
+                        axis.vlines(
+                            best_point_x,
+                            0,
+                            best_point_y,
+                            linestyles="dashed",
+                            color=line.get_color(),
+                            alpha=0.5,
+                        )
+                else:
+                    axis.plot(
+                        col.index.values,
+                        filter_signal(
+                            col.values) if interpolate else col.values,
+                        style,
+                        alpha=0.3
+                    )
 
     for metric, axis in zip(metrics, flat_axes):
-        alias = sanitize_ml_labels(metric)
+        alias = sanitize_ml_labels(metric, custom_defaults=custom_defaults)
         axis.set_xlabel(x_label)
         if log_scale_metrics:
             axis.set_yscale("log")
@@ -122,7 +179,7 @@ def filter_column(histories: List[str], columns: List[str]) -> List[pd.DataFrame
     return [history[columns] for history in histories]
 
 
-def to_dataframe(history)->pd.DataFrame:
+def to_dataframe(history) -> pd.DataFrame:
     if isinstance(history, pd.DataFrame):
         return history
     if isinstance(history, Dict):
@@ -147,7 +204,10 @@ def plot_history(
     path: str = None,
     single_graphs: bool = False,
     max_epochs: Union[int, str] = "max",
-    log_scale_metrics: bool = False
+    monitor: str = None,
+    monitor_mode: str = "max",
+    log_scale_metrics: bool = False,
+    custom_defaults: Dict[str, Union[List[str], str]] = None
 ):
     """Plot given training histories.
 
@@ -173,19 +233,52 @@ def plot_history(
         whetever to create the graphs one by one.
     max_epochs: Union[int, str] = "max",
         Number of epochs to plot. Can either be "max", "min" or a positive integer value.
+    monitor: str = None,
+        Metric to use to display best points.
+        For example you may use "loss" or "val_loss".
+        By default None, to not display any best point.
+    monitor_mode: str = "max",
+        Mode to display the monitor metric best point.
+        Can either be "max" or "min".
     log_scale_metrics: bool = False,
         Wether to use log scale for the metrics.
+    custom_defaults: Dict[str, Union[List[str], str]] = None,
+        Dictionary of custom mapping to use to sanitize metric names.
+
+    Raises
+    --------------------------
+    ValueError,
+        Currently the monitor metric best point cannot be displayed if interpolation is active.
+    ValueError,
+        If monitor_mode is not either "min" or "max".
+    ValueError,
+        If max_epochs is not either "min", "max" or a numeric integer.
     """
+    if interpolate and monitor is not None:
+        raise ValueError((
+            "Currently the monitor metric best point "
+            "cannot be displayed if interpolation is active."
+        ))
+    if monitor_mode not in ("min", "max"):
+        raise ValueError("Given monitor mode '{}' is not supported.".format(
+            monitor_mode
+        ))
+    if max_epochs not in ("min", "max") and not isinstance(max_epochs, int):
+        raise ValueError("Given parameter max_epochs '{}' is not supported.".format(
+            max_epochs
+        ))
     if not isinstance(histories, list):
         histories = [histories]
     if path is not None:
         dirname = os.path.dirname(path)
         if dirname:
             os.makedirs(os.path.dirname(path), exist_ok=True)
+
     histories = [
         to_dataframe(history)._get_numeric_data()
         for history in histories
     ]
+
     if max_epochs in ("max", "min"):
         epochs = [
             len(history)
@@ -193,6 +286,7 @@ def plot_history(
         ]
         if max_epochs == "max":
             max_epochs = max(epochs)
+
         if max_epochs == "min":
             max_epochs = min(epochs)
 
@@ -201,18 +295,57 @@ def plot_history(
         for history in histories
     ]
 
+    if len(histories) > 0:
+        average_history = pd.concat(histories)
+        average_history = average_history.groupby(average_history.index).mean()
+    else:
+        average_history = None
+
+    if monitor is not None:
+        history_to_monitor = (
+            histories[0] if average_history is None else average_history)[monitor]
+        if monitor_mode == "max":
+            best_point_x = history_to_monitor.argmax()
+        elif monitor_mode == "min":
+            best_point_x = history_to_monitor.argmin()
+
+    else:
+        best_point_x = None
+
     if single_graphs:
         for columns in _get_columns(histories[0]):
             _plot_history(
                 filter_column(histories, columns),
+                average_history,
                 style,
                 interpolate,
                 side,
                 graphs_per_row,
                 customization_callback,
                 "{path}/{c}.png".format(path=path, c=columns[0]),
-                log_scale_metrics
+                log_scale_metrics,
+                monitor=sanitize_ml_labels(
+                    monitor,
+                    custom_defaults=custom_defaults
+                ),
+                best_point_x=best_point_x,
+                custom_defaults=custom_defaults
             )
     else:
-        _plot_history(histories, style, interpolate, side, graphs_per_row,
-                      customization_callback, path, log_scale_metrics)
+        _plot_history(
+            histories,
+            average_history,
+            style,
+            interpolate,
+            side,
+            graphs_per_row,
+            customization_callback,
+            path,
+            log_scale_metrics,
+            monitor=sanitize_ml_labels(
+                monitor,
+                custom_defaults=custom_defaults
+            ),
+            best_point_x=best_point_x,
+            custom_defaults=custom_defaults
+        )

@@ -1,9 +1,10 @@
+import pandas as pd
+import os
+from plot_keras_history import plot_history
+import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from plot_keras_history import plot_history
-import os
-import pandas as pd
+
 
 def test_plot_multi_history():
     plot_history([
