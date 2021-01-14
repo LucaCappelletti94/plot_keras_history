@@ -172,7 +172,13 @@ def _plot_history(
 
 
 def _get_columns(history: pd.DataFrame) -> List[str]:
-    return [[c] if f"val_{c}" not in history else [c,  f"val_{c}"] for c in history if not c.startswith("val_")]
+    return [
+        [c]
+        if f"val_{c}" not in history
+        else [c,  f"val_{c}"]
+        for c in history.columns
+        if not c.startswith("val_") and history[c].notna().all()
+    ]
 
 
 def filter_column(histories: List[str], columns: List[str]) -> List[pd.DataFrame]:
