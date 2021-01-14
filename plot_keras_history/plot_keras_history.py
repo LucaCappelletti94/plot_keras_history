@@ -68,7 +68,10 @@ def _plot_history(
         Dictionary of custom mapping to use to sanitize metric names.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
-    metrics = [m for m in histories[0] if not m.startswith("val_")]
+    metrics = [
+        c[0]
+        for c in _get_columns(histories[0])
+    ]
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
     _, axes = plt.subplots(h, w, figsize=(side*w, side*h))
