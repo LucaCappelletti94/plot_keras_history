@@ -347,6 +347,7 @@ def plot_history(
     ValueError,
         If max_epochs is not either "min", "max" or a numeric integer.
     """
+    # Some parameters validation
     if interpolate and monitor is not None:
         raise ValueError((
             "Currently the monitor metric best point "
@@ -360,18 +361,25 @@ def plot_history(
         raise ValueError("Given parameter max_epochs '{}' is not supported.".format(
             max_epochs
         ))
+    # If the histories are not provided as a list, we normalized it
+    # to a list.
     if not isinstance(histories, list):
         histories = [histories]
+    # If the path is not None, we prepare the directory where to
+    # store the created image(s).
     if path is not None:
-        dirname = os.path.dirname(path)
-        if dirname:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
+        directory_name = os.path.dirname(path)
+        # The directory name may be an empty string.
+        if directory_name:
+            os.makedirs(directory_name, exist_ok=True)
 
+    # Normalize the training histories.
     histories = [
         to_dataframe(history)._get_numeric_data()
         for history in histories
     ]
 
+    # Filter out the epochs as required.
     if max_epochs in ("max", "min"):
         epochs = [
             len(history)
@@ -388,12 +396,14 @@ def plot_history(
         for history in histories
     ]
 
-    if len(histories) > 0:
+    # If there are more than one history, we plot also the average.
+    if len(histories) > 1:
         average_history = pd.concat(histories)
         average_history = average_history.groupby(average_history.index).mean()
     else:
         average_history = None
 
+    # If we want to plot informations relative to the monitored metrics
     if monitor is not None:
         history_to_monitor = (
             histories[0] if average_history is None else average_history)[monitor]
@@ -401,7 +411,6 @@ def plot_history(
             best_point_x = history_to_monitor.argmax()
         elif monitor_mode == "min":
             best_point_x = history_to_monitor.argmin()
-
     else:
         best_point_x = None
 
