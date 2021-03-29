@@ -1,3 +1,4 @@
+"""Methods """
 import matplotlib.pyplot as plt
 from typing import List, Dict, Union, Tuple, Callable
 import os
@@ -8,6 +9,7 @@ from scipy.signal import savgol_filter
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric
+from .utils import to_dataframe
 
 
 def filter_signal(
@@ -252,41 +254,6 @@ def filter_column(
     return [history[columns] for history in histories]
 
 
-def to_dataframe(history: Union[pd.DataFrame, Dict, str]) -> pd.DataFrame:
-    """Return given history normalized to a dataframe.
-
-    Parameters
-    -----------------------------
-    history: Union[pd.DataFrame, Dict, str],
-        The history object to be normalized.
-        Supported values are:
-        - pandas DataFrames
-        - Dictionaries
-        - Paths to csv and json files
-
-    Raises
-    -----------------------------
-    TypeError,
-        If given history object is not supported.
-
-    Returns
-    -----------------------------
-    Normalized pandas dataframe history object.
-    """
-    if isinstance(history, pd.DataFrame):
-        return history
-    if isinstance(history, Dict):
-        return pd.DataFrame(history)
-    if isinstance(history, str):
-        if "csv" in history.split("."):
-            return pd.read_csv(history)
-        if "json" in history.split("."):
-            return pd.read_json(history)
-    raise TypeError("Given history object of type {history_type} is not currently supported!".format(
-        history_type=type(history)
-    ))
-
-
 def plot_history(
     histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
     style: str = "-",
@@ -397,7 +364,7 @@ def plot_history(
     ]
 
     # If there are more than one history, we plot also the average.
-    if len(histories) > 1:
+    if len(histories) > 0:
         average_history = pd.concat(histories)
         average_history = average_history.groupby(average_history.index).mean()
     else:
