@@ -120,8 +120,8 @@ def _plot_history(
         c[0]
         for c in _get_columns(histories[0])
     ]
-    n = len(metrics)
-    w, h = get_figsize(n, graphs_per_row)
+    number_of_metrics = len(metrics)
+    w, h = get_figsize(number_of_metrics, graphs_per_row)
     fig, axes = plt.subplots(h, w, figsize=(side*w, side*h))
     flat_axes = np.array(axes).flatten()
 
@@ -232,11 +232,47 @@ def _get_columns(history: pd.DataFrame) -> List[str]:
     ]
 
 
-def filter_column(histories: List[str], columns: List[str]) -> List[pd.DataFrame]:
+def filter_column(
+    histories: List[pd.DataFrame],
+    columns: List[str]
+) -> List[pd.DataFrame]:
+    """Return filtered list of dataframes to given columns.
+
+    Parameters
+    -----------------------------
+    histories: List[pd.DataFrame],
+        List of histories as pandas dataframes to filter.
+    columns: List[str],
+        List of columns to keep.
+
+    Returns
+    -----------------------------
+    List of filtered history dataframes.
+    """
     return [history[columns] for history in histories]
 
 
-def to_dataframe(history) -> pd.DataFrame:
+def to_dataframe(history: Union[pd.DataFrame, Dict, str]) -> pd.DataFrame:
+    """Return given history normalized to a dataframe.
+
+    Parameters
+    -----------------------------
+    history: Union[pd.DataFrame, Dict, str],
+        The history object to be normalized.
+        Supported values are:
+        - pandas DataFrames
+        - Dictionaries
+        - Paths to csv and json files
+
+    Raises
+    -----------------------------
+    TypeError,
+        If given history object is not supported.
+
+    Returns
+    -----------------------------
+    Normalized pandas dataframe history object.
+    """
     if isinstance(history, pd.DataFrame):
         return history
     if isinstance(history, Dict):
@@ -246,7 +282,7 @@ def to_dataframe(history) -> pd.DataFrame:
             return pd.read_csv(history)
         if "json" in history.split("."):
             return pd.read_json(history)
-    raise ValueError("Invalid history term of type {history_type}".format(
+    raise TypeError("Given history object of type {history_type} is not currently supported!".format(
         history_type=type(history)
     ))
 
