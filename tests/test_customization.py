@@ -17,5 +17,5 @@ def test_customization():
     plot_history(["tests/big_history.csv", "tests/big_history.csv"])
     plt.close()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         plot_history(78)
