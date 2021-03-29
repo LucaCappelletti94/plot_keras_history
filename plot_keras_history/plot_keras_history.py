@@ -5,20 +5,68 @@ import math
 import numpy as np
 import pandas as pd
 from scipy.signal import savgol_filter
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric
 
 
-def filter_signal(y: List[float], window: int = 17, polyorder: int = 3) -> List[float]:
+def filter_signal(
+    y: List[float],
+    window: int = 17,
+    polyorder: int = 3
+) -> List[float]:
+    """Return filtered signal using savgol filter.
+
+    Parameters
+    ----------------------------------
+    y: List[float],
+        The vector to filter.
+    window: int = 17,
+        The size of the window.
+        This value MUST be an odd number.
+    polyorder: int = 3,
+        Order of the polynomial.
+
+    Returns
+    ----------------------------------
+    Filtered vector.
+    """
+    # The window cannot be smaller than 7 and cannot be greater
+    # than the length of the given vector.
     window = max(7, min(window, len(y)))
+    # If the window is not odd we force it to be so.
     if window % 2 == 0:
         window -= 1
+    # If the window is still bigger than the size of the given vector
+    # we return the vector unfiltered.
     if len(y) < window:
         return y
+    # Otherwise we apply the savgol filter.
     return savgol_filter(y, window, polyorder)
 
 
-def get_figsize(n: int, graphs_per_row: int) -> Tuple[int, int]:
-    return min(n, graphs_per_row), math.ceil(n/graphs_per_row)
+def get_figsize(
+    number_of_metrics: int,
+    graphs_per_row: int
+) -> Tuple[int, int]:
+    """Return tuple with the size of the given figures.
+
+    Parameters
+    -----------------------------------
+    number_of_metrics: int,
+        Number of the metrics to fit into figure.
+    graphs_per_row: int,
+        Number of graphs to put in each row.
+
+
+    Returns
+    -----------------------------------
+    Width and height of the subplots.
+    """
+    return (
+        min(number_of_metrics, graphs_per_row),
+        math.ceil(number_of_metrics/graphs_per_row)
+    )
 
 
 def _plot_history(
@@ -35,26 +83,26 @@ def _plot_history(
     monitor: str = None,
     best_point_x: int = None,
     custom_defaults: Dict[str, Union[List[str], str]] = None
-):
+) -> Tuple[Figure, Axes]:
     """Plot given training histories.
 
     Parameters
     -------------------------------
-    histories:pd.DataFrame,
+    histories: pd.DataFrame,
         The histories to plot.
     average_history: pd.DataFrame = None,
         Average histories, if multiple histories were given.
-    style:str="-",
+    style: str = "-",
         The style to use when plotting the graphs.
-    interpolate:bool=False,
+    interpolate: bool=False,
         Whetever to reduce the graphs noise.
-    side:int=5,
+    side: int=5,
         The side of every sub-graph.
-    graphs_per_row:int=4,
+    graphs_per_row: int = 4,
         Number of graphs per row.
-    customization_callback:Callable=None,
+    customization_callback: Callable = None,
         Callback for customising axis.
-    path:str=None,
+    path:str = None,
         Where to save the graphs, by defalut nowhere.
     monitor: str = None,
         Metric to use to display best points.
@@ -74,7 +122,7 @@ def _plot_history(
     ]
     n = len(metrics)
     w, h = get_figsize(n, graphs_per_row)
-    _, axes = plt.subplots(h, w, figsize=(side*w, side*h))
+    fig, axes = plt.subplots(h, w, figsize=(side*w, side*h))
     flat_axes = np.array(axes).flatten()
 
     for i, history in enumerate([average_history] + histories):
@@ -169,9 +217,9 @@ def _plot_history(
     for axis in flat_axes[len(metrics):]:
         axis.axis("off")
 
-    plt.tight_layout()
+    fig.tight_layout()
     if path is not None:
-        plt.savefig(path)
+        fig.savefig(path)
 
 
 def _get_columns(history: pd.DataFrame) -> List[str]:
