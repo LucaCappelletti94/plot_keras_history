@@ -7,7 +7,7 @@ def test_chain_histories():
     double_history = json.load(open("tests/double_history.json", "r"))
     pd.testing.assert_frame_equal(
         pd.DataFrame(history),
-        chain_histories(history, None)
+        chain_histories(history)
     )
     pd.testing.assert_frame_equal(
         pd.DataFrame(double_history),

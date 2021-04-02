@@ -1,74 +1,14 @@
-"""Methods """
+"""Methods for plotting a keras model training history."""
 import matplotlib.pyplot as plt
 from typing import List, Dict, Union, Tuple, Callable
 import os
 import math
 import numpy as np
 import pandas as pd
-from scipy.signal import savgol_filter
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric
-from .utils import to_dataframe
-
-
-def filter_signal(
-    y: List[float],
-    window: int = 17,
-    polyorder: int = 3
-) -> List[float]:
-    """Return filtered signal using savgol filter.
-
-    Parameters
-    ----------------------------------
-    y: List[float],
-        The vector to filter.
-    window: int = 17,
-        The size of the window.
-        This value MUST be an odd number.
-    polyorder: int = 3,
-        Order of the polynomial.
-
-    Returns
-    ----------------------------------
-    Filtered vector.
-    """
-    # The window cannot be smaller than 7 and cannot be greater
-    # than the length of the given vector.
-    window = max(7, min(window, len(y)))
-    # If the window is not odd we force it to be so.
-    if window % 2 == 0:
-        window -= 1
-    # If the window is still bigger than the size of the given vector
-    # we return the vector unfiltered.
-    if len(y) < window:
-        return y
-    # Otherwise we apply the savgol filter.
-    return savgol_filter(y, window, polyorder)
-
-
-def get_figsize(
-    number_of_metrics: int,
-    graphs_per_row: int
-) -> Tuple[int, int]:
-    """Return tuple with the size of the given figures.
-
-    Parameters
-    -----------------------------------
-    number_of_metrics: int,
-        Number of the metrics to fit into figure.
-    graphs_per_row: int,
-        Number of graphs to put in each row.
-
-
-    Returns
-    -----------------------------------
-    Width and height of the subplots.
-    """
-    return (
-        min(number_of_metrics, graphs_per_row),
-        math.ceil(number_of_metrics/graphs_per_row)
-    )
+from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, filter_columns
 
 
 def _plot_history(
@@ -84,6 +24,7 @@ def _plot_history(
     log_scale_metrics: bool = False,
     monitor: str = None,
     best_point_x: int = None,
+    title: str = None,
     custom_defaults: Dict[str, Union[List[str], str]] = None
 ) -> Tuple[Figure, Axes]:
     """Plot given training histories.
@@ -114,17 +55,20 @@ def _plot_history(
         Wether to use log scale for the metrics.
     best_point_x: int = None,
         Point to be highlighted as best.
+    title: str = None,
+        Title to put on top of the subplots.
     custom_defaults: Dict[str, Union[List[str], str]] = None,
         Dictionary of custom mapping to use to sanitize metric names.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
     metrics = [
         c[0]
-        for c in _get_columns(histories[0])
+        for c in get_column_tuples(histories[0])
     ]
     number_of_metrics = len(metrics)
     w, h = get_figsize(number_of_metrics, graphs_per_row)
-    fig, axes = plt.subplots(h, w, figsize=(side*w, side*h))
+    fig, axes = plt.subplots(h, w, figsize=(
+        side*w, side*h), constrained_layout=True)
     flat_axes = np.array(axes).flatten()
 
     for i, history in enumerate([average_history] + histories):
@@ -154,7 +98,8 @@ def _plot_history(
                     line = axis.plot(
                         col.index.values,
                         filter_signal(
-                            col.values) if interpolate else col.values,
+                            col.values
+                        ) if interpolate else col.values,
                         style,
                         label='{kind}: {val:0.4f}'.format(
                             kind=kind,
@@ -219,39 +164,13 @@ def _plot_history(
     for axis in flat_axes[len(metrics):]:
         axis.axis("off")
 
-    fig.tight_layout()
+    if title is not None:
+        fig.suptitle(title, fontsize=20)
+
     if path is not None:
         fig.savefig(path)
 
-
-def _get_columns(history: pd.DataFrame) -> List[str]:
-    return [
-        [c]
-        if f"val_{c}" not in history
-        else [c,  f"val_{c}"]
-        for c in history.columns
-        if not c.startswith("val_") and history[c].notna().all()
-    ]
-
-
-def filter_column(
-    histories: List[pd.DataFrame],
-    columns: List[str]
-) -> List[pd.DataFrame]:
-    """Return filtered list of dataframes to given columns.
-
-    Parameters
-    -----------------------------
-    histories: List[pd.DataFrame],
-        List of histories as pandas dataframes to filter.
-    columns: List[str],
-        List of columns to keep.
-
-    Returns
-    -----------------------------
-    List of filtered history dataframes.
-    """
-    return [history[columns] for history in histories]
+    return fig, axes
 
 
 def plot_history(
@@ -267,8 +186,9 @@ def plot_history(
     monitor: str = None,
     monitor_mode: str = "max",
     log_scale_metrics: bool = False,
+    title: str = None,
     custom_defaults: Dict[str, Union[List[str], str]] = None
-):
+) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
     """Plot given training histories.
 
     Parameters
@@ -302,6 +222,8 @@ def plot_history(
         Can either be "max" or "min".
     log_scale_metrics: bool = False,
         Wether to use log scale for the metrics.
+    title: str = None,
+        Title to put on top of the subplots.
     custom_defaults: Dict[str, Union[List[str], str]] = None,
         Dictionary of custom mapping to use to sanitize metric names.
 
@@ -363,12 +285,8 @@ def plot_history(
         for history in histories
     ]
 
-    # If there are more than one history, we plot also the average.
-    if len(histories) > 0:
-        average_history = pd.concat(histories)
-        average_history = average_history.groupby(average_history.index).mean()
-    else:
-        average_history = None
+    average_history = pd.concat(histories)
+    average_history = average_history.groupby(average_history.index).mean()
 
     # If we want to plot informations relative to the monitored metrics
     if monitor is not None:
@@ -382,9 +300,9 @@ def plot_history(
         best_point_x = None
 
     if single_graphs:
-        for columns in _get_columns(histories[0]):
+        return list(zip(*[
             _plot_history(
-                filter_column(histories, columns),
+                filter_columns(histories, columns),
                 average_history,
                 style,
                 interpolate,
@@ -398,10 +316,13 @@ def plot_history(
                     custom_defaults=custom_defaults
                 ),
                 best_point_x=best_point_x,
-                custom_defaults=custom_defaults
+                title=title,
+                custom_defaults=custom_defaults,
             )
+            for columns in get_column_tuples(histories[0])
+        ]))
     else:
-        _plot_history(
+        return _plot_history(
             histories,
             average_history,
             style,
@@ -416,5 +337,6 @@ def plot_history(
                 custom_defaults=custom_defaults
             ),
             best_point_x=best_point_x,
-            custom_defaults=custom_defaults
+            title=title,
+            custom_defaults=custom_defaults,
         )
