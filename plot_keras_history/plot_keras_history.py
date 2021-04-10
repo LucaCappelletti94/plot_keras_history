@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from tensorflow.keras.callbacks import History
 from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric
 from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, filter_columns
 
@@ -174,7 +175,7 @@ def _plot_history(
 
 
 def plot_history(
-    histories: Union[Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
+    histories: Union[History, List[History], Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
     style: str = "-",
     interpolate: bool = False,
     side: float = 5,

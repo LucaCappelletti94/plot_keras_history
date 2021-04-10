@@ -2,10 +2,11 @@
 from typing import List, Dict, Union, Tuple
 import pandas as pd
 import math
+from tensorflow.keras.callbacks import History
 from scipy.signal import savgol_filter
 
 
-def to_dataframe(history: Union[pd.DataFrame, Dict, str]) -> pd.DataFrame:
+def to_dataframe(history: Union[History, pd.DataFrame, Dict, str]) -> pd.DataFrame:
     """Return given history normalized to a dataframe.
 
     Parameters
@@ -15,6 +16,7 @@ def to_dataframe(history: Union[pd.DataFrame, Dict, str]) -> pd.DataFrame:
         Supported values are:
         - pandas DataFrames
         - Dictionaries
+        - History object from Keras Callbacks
         - Paths to csv and json files
 
     Raises
@@ -30,6 +32,8 @@ def to_dataframe(history: Union[pd.DataFrame, Dict, str]) -> pd.DataFrame:
         return history
     if isinstance(history, Dict):
         return pd.DataFrame(history)
+    if isinstance(history, History):
+        return to_dataframe(history.history)
     if isinstance(history, str):
         if "csv" in history.split("."):
             return pd.read_csv(history)
@@ -130,7 +134,7 @@ def get_figsize(
 
 def get_column_tuples(history: pd.DataFrame) -> List[List[str]]:
     """Return tuples of the columns to plot.
-    
+
     Parameters
     -----------------------
     history: pd.DataFrame,

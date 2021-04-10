@@ -34,7 +34,7 @@ In the following example we will see how to plot and either show or save the tra
     import matplotlib.pyplot as plt
 
     model = my_keras_model()
-    history = model.fit(...).history
+    history = model.fit(...)
     plot_history(history)
     plt.show()
     plot_history(history, path="standard.png")
@@ -50,7 +50,7 @@ By default, the graphs are all in one big image, but for various reasons you mig
     import matplotlib.pyplot as plt
 
     model = my_keras_model()
-    history = model.fit(...).history
+    history = model.fit(...)
     plot_history(history, path="singleton", single_graphs=True)
     plt.close()
 
@@ -66,7 +66,7 @@ In some occasion it is necessary to be able to see the progress of the history t
     import matplotlib.pyplot as plt
 
     model = my_keras_model()
-    history = model.fit(...).history
+    history = model.fit(...)
     plot_history(history, path="interpolated.png", interpolate=True)
     plt.close()
 
@@ -99,8 +99,8 @@ It's common to stop and restart a model's training, and this would break the his
     from plot_keras_history import chain_histories
 
     model = my_keras_model()
-    history1 = model.fit(...).history
-    history2 = model.fit(...).history
+    history1 = model.fit(...)
+    history2 = model.fit(...)
     history = chain_histories(history1, history2)
 
 Extras
