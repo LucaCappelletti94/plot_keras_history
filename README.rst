@@ -30,13 +30,12 @@ In the following example we will see how to plot and either show or save the tra
 
 .. code:: python
 
-    from plot_keras_history import plot_history
+    from plot_keras_history import show_history, plot_history
     import matplotlib.pyplot as plt
 
     model = my_keras_model()
     history = model.fit(...)
-    plot_history(history)
-    plt.show()
+    show_history(history)
     plot_history(history, path="standard.png")
     plt.close()
 
