@@ -1,8 +1,7 @@
 """Methods for plotting a keras model training history."""
 import matplotlib.pyplot as plt
-from typing import List, Dict, Union, Tuple, Callable
+from typing import List, Dict, Union, Tuple, Callable, Optional
 import os
-import math
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
@@ -14,27 +13,26 @@ from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, 
 
 def _plot_history(
     histories: pd.DataFrame,
-    average_history: pd.DataFrame = None,
+    average_history: Optional[pd.DataFrame] = None,
     style: str = "-",
     interpolate: bool = False,
     side: float = 5,
     graphs_per_row: int = 4,
-    customization_callback: Callable = None,
-    path: str = None,
-    max_epochs: int = None,
+    customization_callback: Optional[Callable] = None,
+    path: Optional[str] = None,
     log_scale_metrics: bool = False,
-    monitor: str = None,
-    best_point_x: int = None,
-    title: str = None,
-    custom_defaults: Dict[str, Union[List[str], str]] = None
+    monitor: Optional[str] = None,
+    best_point_x: Optional[int] = None,
+    title: Optional[str] = None,
+    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
 ) -> Tuple[Figure, Axes]:
     """Plot given training histories.
 
     Parameters
     -------------------------------
-    histories: pd.DataFrame,
+    histories: pd.DataFrame
         The histories to plot.
-    average_history: pd.DataFrame = None,
+    average_history: pd.DataFrame = None
         Average histories, if multiple histories were given.
     style: str = "-",
         The style to use when plotting the graphs.
@@ -180,15 +178,15 @@ def plot_history(
     interpolate: bool = False,
     side: float = 5,
     graphs_per_row: int = 4,
-    customization_callback: Callable = None,
-    path: str = None,
+    customization_callback: Optional[Callable] = None,
+    path: Optional[str] = None,
     single_graphs: bool = False,
     max_epochs: Union[int, str] = "max",
-    monitor: str = None,
+    monitor: Optional[str] = None,
     monitor_mode: str = "max",
     log_scale_metrics: bool = False,
-    title: str = None,
-    custom_defaults: Dict[str, Union[List[str], str]] = None
+    title: Optional[str] = None,
+    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
 ) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
     """Plot given training histories.
 
@@ -341,3 +339,85 @@ def plot_history(
             title=title,
             custom_defaults=custom_defaults,
         )
+
+
+def show_history(
+    histories: Union[History, List[History], Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
+    style: str = "-",
+    interpolate: bool = False,
+    side: float = 5,
+    graphs_per_row: int = 4,
+    customization_callback: Optional[Callable] = None,
+    path: Optional[str] = None,
+    single_graphs: bool = False,
+    max_epochs: Union[int, str] = "max",
+    monitor: Optional[str] = None,
+    monitor_mode: str = "max",
+    log_scale_metrics: bool = False,
+    title: Optional[str] = None,
+    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
+) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
+    """Plot given training histories.
+
+    Parameters
+    ----------------------------
+    histories,
+        the histories to plot.
+        This parameter can either be a single or multiple dataframes
+        or one or more paths to the stored CSVs or JSON of the history.
+    style:str="-",
+        the style to use when plotting the graphs.
+    interpolate:bool=False,
+        whetever to reduce the graphs noise.
+    side:int=5,
+        the side of every sub-graph.
+    graphs_per_row:int=4,
+        number of graphs per row.
+    customization_callback:Callable=None,
+        callback for customising axis.
+    path:str=None,
+        where to save the graphs, by defalut nowhere.
+    single_graphs:bool=False,
+        whetever to create the graphs one by one.
+    max_epochs: Union[int, str] = "max",
+        Number of epochs to plot. Can either be "max", "min" or a positive integer value.
+    monitor: str = None,
+        Metric to use to display best points.
+        For example you may use "loss" or "val_loss".
+        By default None, to not display any best point.
+    monitor_mode: str = "max",
+        Mode to display the monitor metric best point.
+        Can either be "max" or "min".
+    log_scale_metrics: bool = False,
+        Wether to use log scale for the metrics.
+    title: str = None,
+        Title to put on top of the subplots.
+    custom_defaults: Dict[str, Union[List[str], str]] = None,
+        Dictionary of custom mapping to use to sanitize metric names.
+
+    Raises
+    --------------------------
+    ValueError,
+        Currently the monitor metric best point cannot be displayed if interpolation is active.
+    ValueError,
+        If monitor_mode is not either "min" or "max".
+    ValueError,
+        If max_epochs is not either "min", "max" or a numeric integer.
+    """
+    plot_history(
+        histories=histories,
+        style=style,
+        interpolate=interpolate,
+        side=side,
+        graphs_per_row=graphs_per_row,
+        customization_callback=customization_callback,
+        path=path,
+        single_graphs=single_graphs,
+        max_epochs=max_epochs,
+        monitor=monitor,
+        monitor_mode=monitor_mode,
+        log_scale_metrics=log_scale_metrics,
+        title=title,
+        custom_defaults=custom_defaults,
+    )
+    plt.show()
