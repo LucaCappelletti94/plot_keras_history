@@ -1,4 +1,5 @@
 """Methods for plotting a keras model training history."""
+import warnings
 import matplotlib.pyplot as plt
 from typing import List, Dict, Union, Tuple, Callable, Optional
 import os
@@ -12,7 +13,7 @@ from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, 
 
 
 def _plot_history(
-    histories: pd.DataFrame,
+    histories: List[pd.DataFrame],
     average_history: Optional[pd.DataFrame] = None,
     style: str = "-",
     interpolate: bool = False,
@@ -30,7 +31,7 @@ def _plot_history(
 
     Parameters
     -------------------------------
-    histories: pd.DataFrame
+    histories: List[pd.DataFrame]
         The histories to plot.
     average_history: pd.DataFrame = None
         Average histories, if multiple histories were given.
@@ -72,6 +73,22 @@ def _plot_history(
 
     for i, history in enumerate([average_history] + histories):
         for metric, axis in zip(metrics, flat_axes):
+            if is_normalized_metric(metric):
+                min_value = col.values.min()
+                max_value = col.values.max()
+                if min_value < 0.0 or max_value > 1.0:
+                    warnings.warns(
+                        (
+                            "Please be advised that you have provided a metric called `{metric}` "
+                            "that is expected to be normalized, i.e. between 0 and 1. The values "
+                            "you have provided for this metric were between {min_value:0.3f} and "
+                            "{max_value:0.3f}."
+                        ).format(
+                            metric=metric,
+                            min_value=min_value,
+                            max_value=max_value
+                        )
+                    )
             for name, kind in zip(
                 *(
                     ((metric, f"val_{metric}"), ("Train", "Test"))
