@@ -11,7 +11,7 @@ def to_dataframe(history: Union[History, pd.DataFrame, Dict, str]) -> pd.DataFra
 
     Parameters
     -----------------------------
-    history: Union[pd.DataFrame, Dict, str],
+    history: Union[pd.DataFrame, Dict, str]
         The history object to be normalized.
         Supported values are:
         - pandas DataFrames
@@ -51,12 +51,12 @@ def chain_histories(
 
     Parameters
     --------------------
-    *histories: List[Dict[str, List[float]]],
+    *histories: List[Dict[str, List[float]]]
         The histories to concate.
 
     Raises
     --------------------
-    ValueError,
+    ValueError
         If the given histories list is empty.
 
     Returns
@@ -82,12 +82,12 @@ def filter_signal(
 
     Parameters
     ----------------------------------
-    y: List[float],
+    y: List[float]
         The vector to filter.
-    window: int = 17,
+    window: int = 17
         The size of the window.
         This value MUST be an odd number.
-    polyorder: int = 3,
+    polyorder: int = 3
         Order of the polynomial.
 
     Returns
@@ -116,9 +116,9 @@ def get_figsize(
 
     Parameters
     -----------------------------------
-    number_of_metrics: int,
+    number_of_metrics: int
         Number of the metrics to fit into figure.
-    graphs_per_row: int,
+    graphs_per_row: int
         Number of graphs to put in each row.
 
 
@@ -137,7 +137,7 @@ def get_column_tuples(history: pd.DataFrame) -> List[List[str]]:
 
     Parameters
     -----------------------
-    history: pd.DataFrame,
+    history: pd.DataFrame
         Pandas dataframe with the training history.
 
     Returns
@@ -161,9 +161,9 @@ def filter_columns(
 
     Parameters
     -----------------------------
-    histories: List[pd.DataFrame],
+    histories: List[pd.DataFrame]
         List of histories as pandas dataframes to filter.
-    columns: List[str],
+    columns: List[str]
         List of columns to keep.
 
     Returns

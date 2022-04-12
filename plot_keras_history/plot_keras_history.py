@@ -34,29 +34,29 @@ def _plot_history(
         The histories to plot.
     average_history: pd.DataFrame = None
         Average histories, if multiple histories were given.
-    style: str = "-",
+    style: str = "-"
         The style to use when plotting the graphs.
-    interpolate: bool=False,
+    interpolate: bool = False
         Whetever to reduce the graphs noise.
-    side: int=5,
+    side: int = 5
         The side of every sub-graph.
-    graphs_per_row: int = 4,
+    graphs_per_row: int = 4
         Number of graphs per row.
-    customization_callback: Callable = None,
+    customization_callback: Callable = None
         Callback for customising axis.
-    path:str = None,
+    path:str = None
         Where to save the graphs, by defalut nowhere.
-    monitor: str = None,
+    monitor: str = None
         Metric to use to display best points.
         For example you may use "loss" or "val_loss".
         By default None, to not display any best point.
-    log_scale_metrics: bool = False,
+    log_scale_metrics: bool = False
         Wether to use log scale for the metrics.
-    best_point_x: int = None,
+    best_point_x: int = None
         Point to be highlighted as best.
-    title: str = None,
+    title: str = None
         Title to put on top of the subplots.
-    custom_defaults: Dict[str, Union[List[str], str]] = None,
+    custom_defaults: Dict[str, Union[List[str], str]] = None
         Dictionary of custom mapping to use to sanitize metric names.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
@@ -192,47 +192,47 @@ def plot_history(
 
     Parameters
     ----------------------------
-    histories,
+    histories
         the histories to plot.
         This parameter can either be a single or multiple dataframes
         or one or more paths to the stored CSVs or JSON of the history.
-    style:str="-",
+    style: str = "-"
         the style to use when plotting the graphs.
-    interpolate:bool=False,
+    interpolate: bool = False
         whetever to reduce the graphs noise.
-    side:int=5,
+    side: int = 5
         the side of every sub-graph.
-    graphs_per_row:int=4,
+    graphs_per_row: int = 4
         number of graphs per row.
-    customization_callback:Callable=None,
+    customization_callback: Callable = None
         callback for customising axis.
-    path:str=None,
+    path: str = None
         where to save the graphs, by defalut nowhere.
-    single_graphs:bool=False,
+    single_graphs: bool = False
         whetever to create the graphs one by one.
-    max_epochs: Union[int, str] = "max",
+    max_epochs: Union[int, str] = "max"
         Number of epochs to plot. Can either be "max", "min" or a positive integer value.
-    monitor: str = None,
+    monitor: str = None
         Metric to use to display best points.
         For example you may use "loss" or "val_loss".
         By default None, to not display any best point.
-    monitor_mode: str = "max",
+    monitor_mode: str = "max"
         Mode to display the monitor metric best point.
         Can either be "max" or "min".
-    log_scale_metrics: bool = False,
+    log_scale_metrics: bool = False
         Wether to use log scale for the metrics.
     title: str = None,
         Title to put on top of the subplots.
-    custom_defaults: Dict[str, Union[List[str], str]] = None,
+    custom_defaults: Dict[str, Union[List[str], str]] = None
         Dictionary of custom mapping to use to sanitize metric names.
 
     Raises
     --------------------------
-    ValueError,
+    ValueError
         Currently the monitor metric best point cannot be displayed if interpolation is active.
-    ValueError,
+    ValueError
         If monitor_mode is not either "min" or "max".
-    ValueError,
+    ValueError
         If max_epochs is not either "min", "max" or a numeric integer.
     """
     # Some parameters validation
@@ -361,47 +361,47 @@ def show_history(
 
     Parameters
     ----------------------------
-    histories,
+    histories
         the histories to plot.
         This parameter can either be a single or multiple dataframes
         or one or more paths to the stored CSVs or JSON of the history.
-    style:str="-",
+    style: str = "-"
         the style to use when plotting the graphs.
-    interpolate:bool=False,
+    interpolate: bool = False
         whetever to reduce the graphs noise.
-    side:int=5,
+    side: int = 5
         the side of every sub-graph.
-    graphs_per_row:int=4,
+    graphs_per_row: int = 4
         number of graphs per row.
-    customization_callback:Callable=None,
+    customization_callback: Callable = None
         callback for customising axis.
-    path:str=None,
+    path: str = None
         where to save the graphs, by defalut nowhere.
-    single_graphs:bool=False,
+    single_graphs: bool = False
         whetever to create the graphs one by one.
-    max_epochs: Union[int, str] = "max",
+    max_epochs: Union[int, str] = "max"
         Number of epochs to plot. Can either be "max", "min" or a positive integer value.
-    monitor: str = None,
+    monitor: str = None
         Metric to use to display best points.
         For example you may use "loss" or "val_loss".
         By default None, to not display any best point.
-    monitor_mode: str = "max",
+    monitor_mode: str = "max"
         Mode to display the monitor metric best point.
         Can either be "max" or "min".
-    log_scale_metrics: bool = False,
+    log_scale_metrics: bool = False
         Wether to use log scale for the metrics.
-    title: str = None,
+    title: str = None
         Title to put on top of the subplots.
-    custom_defaults: Dict[str, Union[List[str], str]] = None,
+    custom_defaults: Dict[str, Union[List[str], str]] = None
         Dictionary of custom mapping to use to sanitize metric names.
 
     Raises
     --------------------------
-    ValueError,
+    ValueError
         Currently the monitor metric best point cannot be displayed if interpolation is active.
-    ValueError,
+    ValueError
         If monitor_mode is not either "min" or "max".
-    ValueError,
+    ValueError
         If max_epochs is not either "min", "max" or a numeric integer.
     """
     plot_history(
