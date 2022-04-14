@@ -45,7 +45,7 @@ def to_dataframe(history: Union[History, pd.DataFrame, Dict, str]) -> pd.DataFra
 
 
 def chain_histories(
-    *histories: List[Dict[str, List[float]]]
+    *histories: List[Dict[str, List[float]]],
 ) -> pd.DataFrame:
     """Return chained histories.
 

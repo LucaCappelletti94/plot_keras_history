@@ -73,22 +73,6 @@ def _plot_history(
 
     for i, history in enumerate([average_history] + histories):
         for metric, axis in zip(metrics, flat_axes):
-            if is_normalized_metric(metric):
-                min_value = col.values.min()
-                max_value = col.values.max()
-                if min_value < 0.0 or max_value > 1.0:
-                    warnings.warns(
-                        (
-                            "Please be advised that you have provided a metric called `{metric}` "
-                            "that is expected to be normalized, i.e. between 0 and 1. The values "
-                            "you have provided for this metric were between {min_value:0.3f} and "
-                            "{max_value:0.3f}."
-                        ).format(
-                            metric=metric,
-                            min_value=min_value,
-                            max_value=max_value
-                        )
-                    )
             for name, kind in zip(
                 *(
                     ((metric, f"val_{metric}"), ("Train", "Test"))
@@ -97,6 +81,22 @@ def _plot_history(
                 )
             ):
                 col = history[name]
+                if is_normalized_metric(metric):
+                    min_value = col.values.min()
+                    max_value = col.values.max()
+                    if min_value < 0.0 or max_value > 1.0:
+                        warnings.warn(
+                            (
+                                "Please be advised that you have provided a metric called `{metric}` "
+                                "that is expected to be normalized, i.e. between 0 and 1. The values "
+                                "you have provided for this metric were between {min_value:0.3f} and "
+                                "{max_value:0.3f}."
+                            ).format(
+                                metric=metric,
+                                min_value=min_value,
+                                max_value=max_value
+                            )
+                        )
                 if i == 0:
                     if best_point_x is not None:
                         best_point_y = col.values[best_point_x]
@@ -325,8 +325,8 @@ def plot_history(
                 side,
                 graphs_per_row,
                 customization_callback,
-                "{path}/{c}.png".format(path=path, c=columns[0]),
-                log_scale_metrics,
+                path = None if path is None else "{path}/{c}.png".format(path=path, c=columns[0]),
+                log_scale_metrics=log_scale_metrics,
                 monitor=sanitize_ml_labels(
                     monitor,
                     custom_defaults=custom_defaults
