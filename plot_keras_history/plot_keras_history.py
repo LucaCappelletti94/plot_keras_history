@@ -8,7 +8,7 @@ import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from tensorflow.keras.callbacks import History
-from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric
+from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric, is_absolutely_normalized_metric
 from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, filter_columns
 
 
@@ -97,6 +97,22 @@ def _plot_history(
                                 max_value=max_value
                             )
                         )
+                if is_absolutely_normalized_metric(metric):
+                    min_value = col.values.min()
+                    max_value = col.values.max()
+                    if min_value < -1.0 or max_value > 1.0:
+                        warnings.warn(
+                            (
+                                "Please be advised that you have provided a metric called `{metric}` "
+                                "that is expected to be absolutely normalized, i.e. between -1 and 1. The values "
+                                "you have provided for this metric were between {min_value:0.3f} and "
+                                "{max_value:0.3f}."
+                            ).format(
+                                metric=metric,
+                                min_value=min_value,
+                                max_value=max_value
+                            )
+                        )
                 if i == 0:
                     if best_point_x is not None:
                         best_point_y = col.values[best_point_x]
@@ -172,6 +188,8 @@ def _plot_history(
         axis.legend()
         if is_normalized_metric(metric):
             axis.set_ylim(-0.05, 1.05)
+        elif is_absolutely_normalized_metric(metric):
+            axis.set_ylim(-1.05, 1.05)
         if history.shape[0] <= 4:
             axis.set_xticks(range(history.shape[0]))
         if customization_callback is not None:

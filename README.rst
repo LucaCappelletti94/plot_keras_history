@@ -1,6 +1,6 @@
 Plot Keras History
 =========================================================================================
-|travis| |sonar_quality| |sonar_maintainability| |codacy| |pip| |downloads|
+|pip| |downloads|
 
 A python package to print a `Keras model training history <https://keras.io/callbacks/#history>`_
 
@@ -11,12 +11,6 @@ As usual, just download it using pip:
 .. code:: shell
 
     pip install plot_keras_history
-
-Tests Coverage
-----------------------------------------------
-Since some software handling coverages sometime get slightly different results, here's three of them:
-
-|coveralls| |sonar_coverage| |code_climate_coverage|
 
 Usage
 ------------------------------------------------
@@ -53,6 +47,23 @@ By default, the graphs are all in one big image, but for various reasons you mig
     plot_history(history, path="singleton", single_graphs=True)
     plt.close()
 
+Plotting multiple training histories
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In the following example we will see how to plot and either show or save the training history:
+
+|standard|
+
+.. code:: python
+
+    from plot_keras_history import show_history, plot_history
+    import matplotlib.pyplot as plt
+
+    model = my_keras_model()
+    history = model.fit(...)
+    show_history(history)
+    plot_history(history, path="standard.png")
+    plt.close()
+
 Reducing the history noise with Savgol Filters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In some occasion it is necessary to be able to see the progress of the history to interpolate the results to remove a bit of noise. A parameter is offered to automatically apply a Savgol filter:
@@ -72,6 +83,11 @@ In some occasion it is necessary to be able to see the progress of the history t
 Automatic aliases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 A number of metrics are automatically converted from the default ones to more talking ones, for example "lr" becomes "Learning Rate", or "acc" becomes "Accuracy".
+
+Automatic normalization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The library automatically normalizes the ranges of metrics that are known to be either in [-1, 1] or [0, 1] ranges in order
+to avoid visual biases.
 
 All the available options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,26 +122,6 @@ Extras
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Numerous additional metrics are available in `extra_keras_metrics <https://github.com/LucaCappelletti94/extra_keras_metrics>`_
 
-.. |travis| image:: https://travis-ci.org/LucaCappelletti94/plot_keras_history.png
-   :target: https://travis-ci.org/LucaCappelletti94/plot_keras_history
-   :alt: Travis CI build
-
-.. |sonar_quality| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_plot_keras_history&metric=alert_status
-    :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_plot_keras_history
-    :alt: SonarCloud Quality
-
-.. |sonar_maintainability| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_plot_keras_history&metric=sqale_rating
-    :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_plot_keras_history
-    :alt: SonarCloud Maintainability
-
-.. |sonar_coverage| image:: https://sonarcloud.io/api/project_badges/measure?project=LucaCappelletti94_plot_keras_history&metric=coverage
-    :target: https://sonarcloud.io/dashboard/index/LucaCappelletti94_plot_keras_history
-    :alt: SonarCloud Coverage
-
-.. |coveralls| image:: https://coveralls.io/repos/github/LucaCappelletti94/plot_keras_history/badge.svg?branch=master
-    :target: https://coveralls.io/github/LucaCappelletti94/plot_keras_history?branch=master
-    :alt: Coveralls Coverage
-
 .. |pip| image:: https://badge.fury.io/py/plot-keras-history.svg
     :target: https://badge.fury.io/py/plot-keras-history
     :alt: Pypi project
@@ -133,18 +129,6 @@ Numerous additional metrics are available in `extra_keras_metrics <https://githu
 .. |downloads| image:: https://pepy.tech/badge/plot-keras-history
     :target: https://pepy.tech/badge/plot-keras-history
     :alt: Pypi total project downloads 
-
-.. |codacy|  image:: https://api.codacy.com/project/badge/Grade/4f09666f140a4fc785fecc94b0ed9a6a
-    :target: https://www.codacy.com/app/LucaCappelletti94/plot_keras_history?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LucaCappelletti94/plot_keras_history&amp;utm_campaign=Badge_Grade
-    :alt: Codacy Maintainability
-
-.. |code_climate_maintainability| image:: https://api.codeclimate.com/v1/badges/5540f8112de448ac3298/maintainability
-    :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/maintainability
-    :alt: Maintainability
-
-.. |code_climate_coverage| image:: https://api.codeclimate.com/v1/badges/5540f8112de448ac3298/test_coverage
-    :target: https://codeclimate.com/github/LucaCappelletti94/plot_keras_history/test_coverage
-    :alt: Code Climate Coverate
 
 .. |standard| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/normal.png?raw=true
 .. |interpolated| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/interpolated.png?raw=true
