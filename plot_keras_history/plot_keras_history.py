@@ -15,6 +15,7 @@ from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, 
 def _plot_history(
     histories: List[pd.DataFrame],
     average_history: Optional[pd.DataFrame] = None,
+    standard_deviation_history: Optional[pd.DataFrame] = None,
     style: str = "-",
     interpolate: bool = False,
     side: float = 5,
@@ -22,6 +23,7 @@ def _plot_history(
     customization_callback: Optional[Callable] = None,
     path: Optional[str] = None,
     log_scale_metrics: bool = False,
+    show_standard_deviation: bool = True,
     monitor: Optional[str] = None,
     best_point_x: Optional[int] = None,
     title: Optional[str] = None,
@@ -35,6 +37,8 @@ def _plot_history(
         The histories to plot.
     average_history: pd.DataFrame = None
         Average histories, if multiple histories were given.
+    standard_deviation_history: Optional[pd.DataFrame] = None
+        Standard deviation histories, if multiple histories were given.
     style: str = "-"
         The style to use when plotting the graphs.
     interpolate: bool = False
@@ -52,7 +56,10 @@ def _plot_history(
         For example you may use "loss" or "val_loss".
         By default None, to not display any best point.
     log_scale_metrics: bool = False
-        Wether to use log scale for the metrics.
+        Whether to use log scale for the metrics.
+    show_standard_deviation: bool = False
+        Whether to show the standard deviation when
+        plotting multiple training histories.
     best_point_x: int = None
         Point to be highlighted as best.
     title: str = None
@@ -130,11 +137,35 @@ def _plot_history(
                         else:
                             kind = f"{kind} last value"
 
+                    values = filter_signal(
+                        col.values
+                    ) if interpolate else col.values
+
+                    if show_standard_deviation and standard_deviation_history is not None:
+                        axis.fill_between(
+                            col.index.values,
+                            values-standard_deviation_history[name].values,
+                            values+standard_deviation_history[name].values,
+                            color=color,
+                            alpha=0.1
+                        )
+                        axis.plot(
+                            col.index.values,
+                            values-standard_deviation_history[name].values,
+                            color=color,
+                            linewidth=0.5,
+                            alpha=0.1
+                        )
+                        axis.plot(
+                            col.index.values,
+                            values+standard_deviation_history[name].values,
+                            color=color,
+                            linewidth=0.5,
+                            alpha=0.1
+                        )
                     line = axis.plot(
                         col.index.values,
-                        filter_signal(
-                            col.values
-                        ) if interpolate else col.values,
+                        values,
                         style,
                         label='{kind}: {val:0.4f}'.format(
                             kind=kind,
@@ -168,7 +199,7 @@ def _plot_history(
                             best_point_y,
                             linestyles="dashed",
                             color=line.get_color(),
-                            alpha=0.5,
+                            alpha=0.6,
                         )
                 else:
                     axis.plot(
@@ -177,7 +208,7 @@ def _plot_history(
                             col.values) if interpolate else col.values,
                         style,
                         color=color,
-                        alpha=0.3
+                        alpha=0.5
                     )
 
     for metric, axis in zip(metrics, flat_axes):
@@ -226,6 +257,7 @@ def plot_history(
     monitor: Optional[str] = None,
     monitor_mode: str = "max",
     log_scale_metrics: bool = False,
+    show_standard_deviation: bool = True,
     title: Optional[str] = None,
     custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
 ) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
@@ -261,7 +293,10 @@ def plot_history(
         Mode to display the monitor metric best point.
         Can either be "max" or "min".
     log_scale_metrics: bool = False
-        Wether to use log scale for the metrics.
+        Whether to use log scale for the metrics.
+    show_standard_deviation: bool = False
+        Whether to show the standard deviation when
+        plotting multiple training histories.
     title: str = None,
         Title to put on top of the subplots.
     custom_defaults: Dict[str, Union[List[str], str]] = None
@@ -326,10 +361,11 @@ def plot_history(
     ]
 
     if len(histories) > 1:
-        average_history = pd.concat(histories)
-        average_history = average_history.groupby(average_history.index).mean()
+        grouped_histories = pd.concat(histories)
+        average_history = grouped_histories.groupby(grouped_histories.index).mean()
+        standard_deviation_history = grouped_histories.groupby(grouped_histories.index).std()
     else:
-        average_history = None
+        average_history = standard_deviation_history =  None
 
     # If we want to plot informations relative to the monitored metrics
     if monitor is not None:
@@ -347,6 +383,7 @@ def plot_history(
             _plot_history(
                 filter_columns(histories, columns),
                 average_history,
+                standard_deviation_history,
                 style,
                 interpolate,
                 side,
@@ -354,6 +391,7 @@ def plot_history(
                 customization_callback,
                 path = None if path is None else "{path}/{c}.png".format(path=path, c=columns[0]),
                 log_scale_metrics=log_scale_metrics,
+                show_standard_deviation=show_standard_deviation,
                 monitor=sanitize_ml_labels(
                     monitor,
                     custom_defaults=custom_defaults
@@ -368,13 +406,15 @@ def plot_history(
         return _plot_history(
             histories,
             average_history,
+            standard_deviation_history,
             style,
             interpolate,
             side,
             graphs_per_row,
             customization_callback,
             path,
-            log_scale_metrics,
+            log_scale_metrics=log_scale_metrics,
+            show_standard_deviation=show_standard_deviation,
             monitor=sanitize_ml_labels(
                 monitor,
                 custom_defaults=custom_defaults
@@ -398,6 +438,7 @@ def show_history(
     monitor: Optional[str] = None,
     monitor_mode: str = "max",
     log_scale_metrics: bool = False,
+    show_standard_deviation: bool = True,
     title: Optional[str] = None,
     custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
 ) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
@@ -433,7 +474,10 @@ def show_history(
         Mode to display the monitor metric best point.
         Can either be "max" or "min".
     log_scale_metrics: bool = False
-        Wether to use log scale for the metrics.
+        Whether to use log scale for the metrics.
+    show_standard_deviation: bool = False
+        Whether to show the standard deviation when
+        plotting multiple training histories.
     title: str = None
         Title to put on top of the subplots.
     custom_defaults: Dict[str, Union[List[str], str]] = None
@@ -461,6 +505,7 @@ def show_history(
         monitor=monitor,
         monitor_mode=monitor_mode,
         log_scale_metrics=log_scale_metrics,
+        show_standard_deviation=show_standard_deviation,
         title=title,
         custom_defaults=custom_defaults,
     )
