@@ -47,22 +47,26 @@ By default, the graphs are all in one big image, but for various reasons you mig
     plot_history(history, path="singleton", single_graphs=True)
     plt.close()
 
-Plotting multiple training histories
+Plotting multiple histories
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In the following example we will see how to plot and either show or save the training history:
+Let's suppose you are training your model on multiple holdouts and you would like to plot all of them,
+plus an average. Fortunately, we got you covered!
 
-|standard|
+|multiple_histories|
 
 .. code:: python
 
-    from plot_keras_history import show_history, plot_history
+    from plot_keras_history import plot_history
     import matplotlib.pyplot as plt
 
-    model = my_keras_model()
-    history = model.fit(...)
-    show_history(history)
-    plot_history(history, path="standard.png")
+    histories = []
+    for holdout in range(10):
+        model = my_keras_model()
+        histories.append(model.fit(...))
+    
+    plot_history(histories)
     plt.close()
+
 
 Reducing the history noise with Savgol Filters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,3 +136,4 @@ Numerous additional metrics are available in `extra_keras_metrics <https://githu
 
 .. |standard| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/normal.png?raw=true
 .. |interpolated| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/interpolated.png?raw=true
+.. |multiple_histories| image:: https://github.com/LucaCappelletti94/plot_keras_history/blob/master/plots/multiple_histories.png?raw=true

@@ -28,7 +28,8 @@ def find_version(*file_paths):
 
 __version__ = find_version("plot_keras_history", "__version__.py")
 
-test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'codacy-coverage', "compress_json", "tensorflow"]
+test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code',
+             'codacy-coverage', "compress_json", "tensorflow", "get_standard_binary_metrics"]
 
 extras = {
     'test': test_deps,

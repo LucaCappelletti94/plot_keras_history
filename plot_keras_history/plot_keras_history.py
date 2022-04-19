@@ -73,11 +73,11 @@ def _plot_history(
 
     for i, history in enumerate([average_history] + histories):
         for metric, axis in zip(metrics, flat_axes):
-            for name, kind in zip(
+            for name, kind, color in zip(
                 *(
-                    ((metric, f"val_{metric}"), ("Train", "Test"))
+                    ((metric, f"val_{metric}"), ("Train", "Test"), ("tab:blue", "tab:orange"))
                     if f"val_{metric}" in history
-                    else ((metric, ), ("", ))
+                    else ((metric, ), ("", ), ("tab:blue",))
                 )
             ):
                 col = history[name]
@@ -137,6 +137,7 @@ def _plot_history(
                             kind=kind,
                             val=best_point_y
                         ),
+                        color=color,
                         zorder=10000
                     )[0]
                     if best_point_x is not None:
@@ -171,7 +172,8 @@ def _plot_history(
                         filter_signal(
                             col.values) if interpolate else col.values,
                         style,
-                        alpha=0.3
+                        color=color,
+                        alpha=0.5
                     )
 
     for metric, axis in zip(metrics, flat_axes):
