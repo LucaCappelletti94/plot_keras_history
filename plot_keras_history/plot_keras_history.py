@@ -71,7 +71,10 @@ def _plot_history(
         side*w, side*h), constrained_layout=True)
     flat_axes = np.array(axes).flatten()
 
-    for i, history in enumerate([average_history] + histories):
+    if average_history is not None:
+        histories = [average_history] + histories
+
+    for i, history in enumerate(histories):
         for metric, axis in zip(metrics, flat_axes):
             for name, kind, color in zip(
                 *(
@@ -137,6 +140,7 @@ def _plot_history(
                             kind=kind,
                             val=best_point_y
                         ),
+                        linewidth=2 if len(histories) > 1 else 1,
                         color=color,
                         zorder=10000
                     )[0]
@@ -173,7 +177,7 @@ def _plot_history(
                             col.values) if interpolate else col.values,
                         style,
                         color=color,
-                        alpha=0.5
+                        alpha=0.3
                     )
 
     for metric, axis in zip(metrics, flat_axes):
@@ -321,8 +325,11 @@ def plot_history(
         for history in histories
     ]
 
-    average_history = pd.concat(histories)
-    average_history = average_history.groupby(average_history.index).mean()
+    if len(histories) > 1:
+        average_history = pd.concat(histories)
+        average_history = average_history.groupby(average_history.index).mean()
+    else:
+        average_history = None
 
     # If we want to plot informations relative to the monitored metrics
     if monitor is not None:
