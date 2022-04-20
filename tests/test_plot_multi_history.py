@@ -12,7 +12,7 @@ def test_plot_multi_history():
         pd.read_csv("tests/history2.csv"),
         pd.read_csv("tests/history4.csv"),
         pd.read_csv("tests/history3.csv")
-    ], path="plots/multiple.png", interpolate=True, max_epochs="min")
+    ], path="plots/multiple.png", interpolate=True, max_epochs="min", show_standard_deviation=True)
     plt.close()
     plot_history([
         pd.read_csv("tests/history1.csv"),
