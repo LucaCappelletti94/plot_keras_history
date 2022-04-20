@@ -11,4 +11,4 @@ def test_warning():
         plot_history(compress_json.local_load(
             "wrong_history.json"
         ))
-        assert sum(["normalized" in str(e.message) for e in w]) == 2
+        assert sum(["normalized" in str(e.message) for e in w]) == 3

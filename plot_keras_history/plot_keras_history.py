@@ -23,7 +23,8 @@ def _plot_history(
     customization_callback: Optional[Callable] = None,
     path: Optional[str] = None,
     log_scale_metrics: bool = False,
-    show_standard_deviation: bool = True,
+    show_standard_deviation: bool = False,
+    show_average: bool = True,
     monitor: Optional[str] = None,
     best_point_x: Optional[int] = None,
     title: Optional[str] = None,
@@ -60,6 +61,9 @@ def _plot_history(
     show_standard_deviation: bool = False
         Whether to show the standard deviation when
         plotting multiple training histories.
+    show_average: bool = True
+        Whether to show the average when
+        plotting multiple training histories.
     best_point_x: int = None
         Point to be highlighted as best.
     title: str = None
@@ -78,7 +82,7 @@ def _plot_history(
         side*w, side*h), constrained_layout=True)
     flat_axes = np.array(axes).flatten()
 
-    if average_history is not None:
+    if show_average and average_history is not None:
         histories = [average_history] + histories
 
     for i, history in enumerate(histories):
@@ -257,7 +261,8 @@ def plot_history(
     monitor: Optional[str] = None,
     monitor_mode: str = "max",
     log_scale_metrics: bool = False,
-    show_standard_deviation: bool = True,
+    show_standard_deviation: bool = False,
+    show_average: bool = True,
     title: Optional[str] = None,
     custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
 ) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
@@ -296,6 +301,9 @@ def plot_history(
         Whether to use log scale for the metrics.
     show_standard_deviation: bool = False
         Whether to show the standard deviation when
+        plotting multiple training histories.
+    show_average: bool = True
+        Whether to show the average when
         plotting multiple training histories.
     title: str = None,
         Title to put on top of the subplots.
@@ -415,6 +423,7 @@ def plot_history(
             path,
             log_scale_metrics=log_scale_metrics,
             show_standard_deviation=show_standard_deviation,
+            show_average=show_average,
             monitor=sanitize_ml_labels(
                 monitor,
                 custom_defaults=custom_defaults
@@ -438,7 +447,8 @@ def show_history(
     monitor: Optional[str] = None,
     monitor_mode: str = "max",
     log_scale_metrics: bool = False,
-    show_standard_deviation: bool = True,
+    show_standard_deviation: bool = False,
+    show_average: bool = True,
     title: Optional[str] = None,
     custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
 ) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
@@ -478,6 +488,9 @@ def show_history(
     show_standard_deviation: bool = False
         Whether to show the standard deviation when
         plotting multiple training histories.
+    show_average: bool = True
+        Whether to show the average when
+        plotting multiple training histories.
     title: str = None
         Title to put on top of the subplots.
     custom_defaults: Dict[str, Union[List[str], str]] = None
@@ -506,6 +519,7 @@ def show_history(
         monitor_mode=monitor_mode,
         log_scale_metrics=log_scale_metrics,
         show_standard_deviation=show_standard_deviation,
+        show_average=show_average,
         title=title,
         custom_defaults=custom_defaults,
     )

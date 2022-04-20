@@ -64,7 +64,11 @@ plus an average. Fortunately, we got you covered!
         model = my_keras_model()
         histories.append(model.fit(...))
     
-    plot_history(histories)
+    plot_history(
+        histories,
+        show_standard_deviation=False,
+        show_average=True
+    )
     plt.close()
 
 
