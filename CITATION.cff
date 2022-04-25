@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Cappelletti
+    given-names: Luca
+    orcid: https://orcid.org/my-orcid?orcid=0000-0002-1269-2038
+title: "Plot Keras History"
+version: 1.1.36
+doi: 10.5072/zenodo.1054923
+date-released: 2022-04-25
