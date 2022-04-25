@@ -136,13 +136,13 @@ If you need a bib file to cite this work, here you have it:
 
 .. code:: bib
 
-    @misc{CappellettiPKH2022,
-        author = {Luca, Cappelletti},
-        title = {Plot Keras History},
-        year = {2022},
-        publisher = {GitHub},
-        journal = {GitHub repository},
-        howpublished = {\url{https://github.com/LucaCappelletti94/plot_keras_history}},
+    @software{Cappelletti_Plot_Keras_History_2022,
+        author = {Cappelletti, Luca},
+        doi = {10.5072/zenodo.1054923},
+        month = {4},
+        title = {{Plot Keras History}},
+        version = {1.1.36},
+        year = {2022}
     }
 
 .. |pip| image:: https://badge.fury.io/py/plot-keras-history.svg
