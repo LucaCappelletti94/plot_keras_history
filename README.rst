@@ -130,6 +130,21 @@ Extras
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Numerous additional metrics are available in `extra_keras_metrics <https://github.com/LucaCappelletti94/extra_keras_metrics>`_
 
+Cite this software
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you need a bib file to cite this work, here you have it:
+
+.. code:: bib
+
+    @misc{CappellettiPKH2022,
+        author = {Luca, Cappelletti},
+        title = {Plot Keras History},
+        year = {2022},
+        publisher = {GitHub},
+        journal = {GitHub repository},
+        howpublished = {\url{https://github.com/LucaCappelletti94/plot_keras_history}},
+    }
+
 .. |pip| image:: https://badge.fury.io/py/plot-keras-history.svg
     :target: https://badge.fury.io/py/plot-keras-history
     :alt: Pypi project
