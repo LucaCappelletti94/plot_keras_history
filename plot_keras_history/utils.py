@@ -2,7 +2,16 @@
 from typing import List, Dict, Union, Tuple
 import pandas as pd
 import math
-from tensorflow.keras.callbacks import History
+try:
+    # We try to import History, but a user may want
+    # to plot a CSV without having TensorFlow installed,
+    # or more generally, a working version of TensorFlow installed.
+    from tensorflow.keras.callbacks import History
+    # If the import fails, we create a wrapper class.
+except Exception:
+    class History:
+        pass
+
 from scipy.signal import savgol_filter
 
 

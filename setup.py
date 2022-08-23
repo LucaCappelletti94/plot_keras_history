@@ -90,7 +90,8 @@ setup(
         "matplotlib",
         "pandas",
         "scipy",
-        "sanitize_ml_labels>=1.0.33"
+        "support_developer>=1.0.2",
+        "sanitize_ml_labels>=1.0.48"
     ],
     tests_require=test_deps,
     extras_require=extras,

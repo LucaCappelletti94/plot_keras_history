@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-from tensorflow.keras.callbacks import History
+
 from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric, is_absolutely_normalized_metric
-from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, filter_columns
+from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, filter_columns, History
 
 
 def _plot_history(

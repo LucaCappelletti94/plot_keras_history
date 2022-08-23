@@ -1,2 +1,2 @@
 """Current version of package plot_keras_history."""
-__version__ = "1.1.36"
+__version__ = "1.1.37"
