@@ -20,6 +20,7 @@ def _plot_history(
     interpolate: bool = False,
     side: float = 5,
     graphs_per_row: int = 4,
+    dpi: int = 100,
     customization_callback: Optional[Callable] = None,
     path: Optional[str] = None,
     log_scale_metrics: bool = False,
@@ -48,6 +49,9 @@ def _plot_history(
         The side of every sub-graph.
     graphs_per_row: int = 4
         Number of graphs per row.
+    dpi: int = 100
+        DPI value to be used for the plots.
+        By default we use matplotlib defaults, 100.
     customization_callback: Callable = None
         Callback for customising axis.
     path:str = None
@@ -79,7 +83,7 @@ def _plot_history(
     number_of_metrics = len(metrics)
     w, h = get_figsize(number_of_metrics, graphs_per_row)
     fig, axes = plt.subplots(h, w, figsize=(
-        side*w, side*h), constrained_layout=True)
+        side*w, side*h), constrained_layout=True, dpi=dpi)
     flat_axes = np.array(axes).flatten()
 
     if show_average and average_history is not None:
@@ -254,6 +258,7 @@ def plot_history(
     interpolate: bool = False,
     side: float = 5,
     graphs_per_row: int = 4,
+    dpi: int = 100,
     customization_callback: Optional[Callable] = None,
     path: Optional[str] = None,
     single_graphs: bool = False,
@@ -282,6 +287,9 @@ def plot_history(
         the side of every sub-graph.
     graphs_per_row: int = 4
         number of graphs per row.
+    dpi: int = 100
+        DPI value to be used for the plots.
+        By default we use matplotlib defaults, 100.
     customization_callback: Callable = None
         callback for customising axis.
     path: str = None
@@ -396,6 +404,7 @@ def plot_history(
                 interpolate,
                 side,
                 graphs_per_row,
+                dpi,
                 customization_callback,
                 path = None if path is None else "{path}/{c}.png".format(path=path, c=columns[0]),
                 log_scale_metrics=log_scale_metrics,
@@ -419,6 +428,7 @@ def plot_history(
             interpolate,
             side,
             graphs_per_row,
+            dpi,
             customization_callback,
             path,
             log_scale_metrics=log_scale_metrics,
@@ -440,6 +450,7 @@ def show_history(
     interpolate: bool = False,
     side: float = 5,
     graphs_per_row: int = 4,
+    dpi: int = 100,
     customization_callback: Optional[Callable] = None,
     path: Optional[str] = None,
     single_graphs: bool = False,
@@ -468,6 +479,9 @@ def show_history(
         the side of every sub-graph.
     graphs_per_row: int = 4
         number of graphs per row.
+    dpi: int = 100
+        DPI value to be used for the plots.
+        By default we use matplotlib defaults, 100.
     customization_callback: Callable = None
         callback for customising axis.
     path: str = None
@@ -511,6 +525,7 @@ def show_history(
         interpolate=interpolate,
         side=side,
         graphs_per_row=graphs_per_row,
+        dpi=dpi,
         customization_callback=customization_callback,
         path=path,
         single_graphs=single_graphs,
