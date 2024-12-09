@@ -1,6 +1,9 @@
 # Plot Keras History
 
-![PyPI](https://badge.fury.io/py/plot-keras-history.svg) ![Downloads](https://pepy.tech/badge/plot-keras-history)
+[![PyPI](https://badge.fury.io/py/plot-keras-history.svg)](https://pypi.org/project/plot-keras-history/)
+[![License](https://img.shields.io/github/license/LucaCappelletti94/plot_keras_history)](https://github.com/LucaCappelletti94/plot_keras_history/blob/master/LICENSE)
+[![Downloads](https://pepy.tech/badge/plot-keras-history)](https://pepy.tech/project/plot-keras-history)
+[![Github Actions](https://github.com/LucaCappelletti94/plot_keras_history/actions/workflows/python.yml/badge.svg)](https://github.com/LucaCappelletti94/plot_keras_history/actions/)
 
 A Python package to print a [`Keras model training history`](https://keras.io/callbacks/#history).
 

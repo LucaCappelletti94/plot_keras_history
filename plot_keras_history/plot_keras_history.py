@@ -385,6 +385,8 @@ def plot_history(
         if max_epochs == "min":
             max_epochs = min(epochs)
 
+    max_epochs = cast(int, max_epochs)
+
     df_histories = [history[:max_epochs] for history in df_histories]
 
     if len(histories) > 1:

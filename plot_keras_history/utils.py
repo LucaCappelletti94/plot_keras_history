@@ -1,4 +1,5 @@
 """Utilities for the plot keras history package."""
+# type: ignore[no-redef]
 
 import math
 from typing import List, Dict, Union, Tuple, cast
@@ -16,7 +17,6 @@ try:
 except (ImportError, ModuleNotFoundError):
 
     # pylint: disable=too-few-public-methods
-    # type: ignore[no-redef]
     class History:
         """Dummy class to be used as a placeholder for the real History object."""
 
