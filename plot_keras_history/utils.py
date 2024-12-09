@@ -1,18 +1,24 @@
 """Utilities for the plot keras history package."""
+
+import math
 from typing import List, Dict, Union, Tuple
 import pandas as pd
-import math
+import numpy as np
+from scipy.signal import savgol_filter
+
 try:
     # We try to import History, but a user may want
-    # to plot a CSV without having TensorFlow installed,
-    # or more generally, a working version of TensorFlow installed.
-    from tensorflow.keras.callbacks import History
-    # If the import fails, we create a wrapper class.
-except Exception:
-    class History:
-        pass
+    # to plot a CSV without having Keras installed,
+    # or more generally, a working version of Keras installed.
+    from keras.callbacks import History
 
-from scipy.signal import savgol_filter
+    # If the import fails, we create a wrapper class.
+except (ImportError, ModuleNotFoundError):
+
+    # pylint: disable=too-few-public-methods
+    # mypy: ignore-errors
+    class History:
+        """Dummy class to be used as a placeholder for the real History object."""
 
 
 def to_dataframe(history: Union[History, pd.DataFrame, Dict, str]) -> pd.DataFrame:
@@ -47,10 +53,15 @@ def to_dataframe(history: Union[History, pd.DataFrame, Dict, str]) -> pd.DataFra
         if "csv" in history.split("."):
             return pd.read_csv(history)
         if "json" in history.split("."):
-            return pd.read_json(history)
-    raise TypeError("Given history object of type {history_type} is not currently supported!".format(
-        history_type=type(history)
-    ))
+            expected_dataframe = pd.read_json(history)
+            if isinstance(expected_dataframe, pd.DataFrame):
+                return expected_dataframe
+            if isinstance(expected_dataframe, pd.Series):
+                return expected_dataframe.to_frame()
+
+    raise TypeError(
+        f"Given history object of type {type(history)} is not currently supported!"
+    )
 
 
 def chain_histories(
@@ -73,20 +84,13 @@ def chain_histories(
     The concatenated histories.
     """
     if len(histories) == 0:
-        raise ValueError(
-            "The given histories list is empty!"
-        )
-    return pd.concat([
-        to_dataframe(history)
-        for history in histories
-    ], axis=0).reset_index(drop=True)
+        raise ValueError("The given histories list is empty!")
+    return pd.concat(
+        [to_dataframe(history) for history in histories], axis=0
+    ).reset_index(drop=True)
 
 
-def filter_signal(
-    y: List[float],
-    window: int = 17,
-    polyorder: int = 3
-) -> List[float]:
+def filter_signal(y: np.ndarray, window: int = 17, polyorder: int = 3) -> np.ndarray:
     """Return filtered signal using savgol filter.
 
     Parameters
@@ -117,10 +121,7 @@ def filter_signal(
     return savgol_filter(y, window, polyorder)
 
 
-def get_figsize(
-    number_of_metrics: int,
-    graphs_per_row: int
-) -> Tuple[int, int]:
+def get_figsize(number_of_metrics: int, graphs_per_row: int) -> Tuple[int, int]:
     """Return tuple with the size of the given figures.
 
     Parameters
@@ -137,7 +138,7 @@ def get_figsize(
     """
     return (
         min(number_of_metrics, graphs_per_row),
-        math.ceil(number_of_metrics/graphs_per_row)
+        math.ceil(number_of_metrics / graphs_per_row),
     )
 
 
@@ -154,17 +155,20 @@ def get_column_tuples(history: pd.DataFrame) -> List[List[str]]:
     List of the tuples of columns
     """
     return [
-        [c, ]
-        if f"val_{c}" not in history
-        else [c,  f"val_{c}"]
+        (
+            [
+                c,
+            ]
+            if f"val_{c}" not in history
+            else [c, f"val_{c}"]
+        )
         for c in history.columns
         if not c.startswith("val_") and history[c].notna().all()
     ]
 
 
 def filter_columns(
-    histories: List[pd.DataFrame],
-    columns: List[str]
+    histories: List[pd.DataFrame], columns: List[str]
 ) -> List[pd.DataFrame]:
     """Return filtered list of dataframes to given columns.
 

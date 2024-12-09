@@ -1,15 +1,27 @@
 """Methods for plotting a keras model training history."""
+
+from typing import List, Dict, Union, Tuple, Callable, Optional, cast
+import os
 import warnings
 import matplotlib.pyplot as plt
-from typing import List, Dict, Union, Tuple, Callable, Optional
-import os
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from sanitize_ml_labels import sanitize_ml_labels, is_normalized_metric, is_absolutely_normalized_metric
-from .utils import to_dataframe, get_figsize, filter_signal, get_column_tuples, filter_columns, History
+from sanitize_ml_labels import (
+    sanitize_ml_labels,
+    is_normalized_metric,
+    is_absolutely_normalized_metric,
+)
+from plot_keras_history.utils import (
+    to_dataframe,
+    get_figsize,
+    filter_signal,
+    get_column_tuples,
+    filter_columns,
+    History,
+)
 
 
 def _plot_history(
@@ -29,7 +41,7 @@ def _plot_history(
     monitor: Optional[str] = None,
     best_point_x: Optional[int] = None,
     title: Optional[str] = None,
-    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
+    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None,
 ) -> Tuple[Figure, Axes]:
     """Plot given training histories.
 
@@ -76,26 +88,30 @@ def _plot_history(
         Dictionary of custom mapping to use to sanitize metric names.
     """
     x_label = "Epochs" if histories[0].index.name is None else histories[0].index.name
-    metrics = [
-        c[0]
-        for c in get_column_tuples(histories[0])
-    ]
+    metrics = [c[0] for c in get_column_tuples(histories[0])]
     number_of_metrics = len(metrics)
     w, h = get_figsize(number_of_metrics, graphs_per_row)
-    fig, axes = plt.subplots(h, w, figsize=(
-        side*w, side*h), constrained_layout=True, dpi=dpi)
+    fig, axes = plt.subplots(
+        nrows=h, ncols=w, figsize=(side * w, side * h), constrained_layout=True, dpi=dpi
+    )
     flat_axes = np.array(axes).flatten()
+    maximal_number_of_rows: int = 0
 
     if show_average and average_history is not None:
         histories = [average_history] + histories
 
     for i, history in enumerate(histories):
+        maximal_number_of_rows = max(maximal_number_of_rows, history.shape[0])
         for metric, axis in zip(metrics, flat_axes):
             for name, kind, color in zip(
                 *(
-                    ((metric, f"val_{metric}"), ("Train", "Test"), ("tab:blue", "tab:orange"))
+                    (
+                        (metric, f"val_{metric}"),
+                        ("Train", "Test"),
+                        ("tab:blue", "tab:orange"),
+                    )
                     if f"val_{metric}" in history
-                    else ((metric, ), ("", ), ("tab:blue",))
+                    else ((metric,), ("",), ("tab:blue",))
                 )
             ):
                 col = history[name]
@@ -105,14 +121,13 @@ def _plot_history(
                     if min_value < 0.0 or max_value > 1.0:
                         warnings.warn(
                             (
-                                "Please be advised that you have provided a metric called `{metric}` "
-                                "that is expected to be normalized, i.e. between 0 and 1. The values "
-                                "you have provided for this metric were between {min_value:0.3f} and "
-                                "{max_value:0.3f}."
-                            ).format(
-                                metric=metric,
-                                min_value=min_value,
-                                max_value=max_value
+                                "Please be advised that you "
+                                f"have provided a metric called `{metric}` "
+                                "that is expected to be normalized, "
+                                "i.e. between 0 and 1. The values "
+                                "you have provided for this metric "
+                                f"were between {min_value:0.3f} and "
+                                f"{max_value:0.3f}."
                             )
                         )
                 if is_absolutely_normalized_metric(metric):
@@ -121,14 +136,13 @@ def _plot_history(
                     if min_value < -1.0 or max_value > 1.0:
                         warnings.warn(
                             (
-                                "Please be advised that you have provided a metric called `{metric}` "
-                                "that is expected to be absolutely normalized, i.e. between -1 and 1. The values "
-                                "you have provided for this metric were between {min_value:0.3f} and "
-                                "{max_value:0.3f}."
-                            ).format(
-                                metric=metric,
-                                min_value=min_value,
-                                max_value=max_value
+                                "Please be advised that you have "
+                                f"provided a metric called `{metric}` "
+                                "that is expected to be absolutely normalized, "
+                                "i.e. between -1 and 1. The values "
+                                "you have provided for this metric were "
+                                f"between {min_value:0.3f} and "
+                                f"{max_value:0.3f}."
                             )
                         )
                 if i == 0:
@@ -141,47 +155,45 @@ def _plot_history(
                     else:
                         best_point_y = col.iloc[-1]
                         if len(kind) == 0:
-                            kind = f"Last value"
+                            kind = "Last value"
                         else:
                             kind = f"{kind} last value"
 
-                    values = filter_signal(
-                        col.values
-                    ) if interpolate else col.values
+                    values = filter_signal(col.values) if interpolate else col.values
 
-                    if show_standard_deviation and standard_deviation_history is not None:
+                    if (
+                        show_standard_deviation
+                        and standard_deviation_history is not None
+                    ):
                         axis.fill_between(
                             col.index.values,
-                            values-standard_deviation_history[name].values,
-                            values+standard_deviation_history[name].values,
+                            values - standard_deviation_history[name].values,
+                            values + standard_deviation_history[name].values,
                             color=color,
-                            alpha=0.1
+                            alpha=0.1,
                         )
                         axis.plot(
                             col.index.values,
-                            values-standard_deviation_history[name].values,
+                            values - standard_deviation_history[name].values,
                             color=color,
                             linewidth=0.5,
-                            alpha=0.1
+                            alpha=0.1,
                         )
                         axis.plot(
                             col.index.values,
-                            values+standard_deviation_history[name].values,
+                            values + standard_deviation_history[name].values,
                             color=color,
                             linewidth=0.5,
-                            alpha=0.1
+                            alpha=0.1,
                         )
                     line = axis.plot(
                         col.index.values,
                         values,
                         style,
-                        label='{kind}: {val:0.4f}'.format(
-                            kind=kind,
-                            val=best_point_y
-                        ),
+                        label=f"{kind}: {best_point_y:0.4f}",
                         linewidth=2 if len(histories) > 1 else 1,
                         color=color,
-                        zorder=10000
+                        zorder=10000,
                     )[0]
                     if best_point_x is not None:
                         best_point_y = col.values[best_point_x]
@@ -191,7 +203,7 @@ def _plot_history(
                             s=30,
                             alpha=0.9,
                             color=line.get_color(),
-                            zorder=10000
+                            zorder=10000,
                         )
                         axis.hlines(
                             best_point_y,
@@ -212,11 +224,10 @@ def _plot_history(
                 else:
                     axis.plot(
                         col.index.values,
-                        filter_signal(
-                            col.values) if interpolate else col.values,
+                        filter_signal(col.values) if interpolate else col.values,
                         style,
                         color=color,
-                        alpha=0.5
+                        alpha=0.5,
                     )
 
     for metric, axis in zip(metrics, flat_axes):
@@ -224,10 +235,8 @@ def _plot_history(
         axis.set_xlabel(x_label)
         if log_scale_metrics:
             axis.set_yscale("log")
-        axis.set_ylabel("{alias}{scale}".format(
-            alias=alias,
-            scale=" (Log scale)" if log_scale_metrics else ""
-        ))
+        scale = " (Log scale)" if log_scale_metrics else ""
+        axis.set_ylabel(f"{alias}{scale}")
         axis.set_title(alias)
         axis.grid(True)
         axis.legend()
@@ -235,12 +244,12 @@ def _plot_history(
             axis.set_ylim(-0.05, 1.05)
         elif is_absolutely_normalized_metric(metric):
             axis.set_ylim(-1.05, 1.05)
-        if history.shape[0] <= 4:
-            axis.set_xticks(range(history.shape[0]))
+        if maximal_number_of_rows <= 4:
+            axis.set_xticks(range(maximal_number_of_rows))
         if customization_callback is not None:
             customization_callback(axis)
 
-    for axis in flat_axes[len(metrics):]:
+    for axis in flat_axes[len(metrics) :]:
         axis.axis("off")
 
     if title is not None:
@@ -253,7 +262,15 @@ def _plot_history(
 
 
 def plot_history(
-    histories: Union[History, List[History], Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
+    histories: Union[
+        History,
+        List[History],
+        Dict[str, List[float]],
+        pd.DataFrame,
+        List[pd.DataFrame],
+        str,
+        List[str],
+    ],
     style: str = "-",
     interpolate: bool = False,
     side: float = 5,
@@ -269,8 +286,8 @@ def plot_history(
     show_standard_deviation: bool = False,
     show_average: bool = True,
     title: Optional[str] = None,
-    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
-) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
+    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None,
+) -> Union[Tuple[Figure, Axes], List[Tuple[Figure, Axes]]]:
     """Plot given training histories.
 
     Parameters
@@ -329,18 +346,16 @@ def plot_history(
     """
     # Some parameters validation
     if interpolate and monitor is not None:
-        raise ValueError((
-            "Currently the monitor metric best point "
-            "cannot be displayed if interpolation is active."
-        ))
+        raise ValueError(
+            (
+                "Currently the monitor metric best point "
+                "cannot be displayed if interpolation is active."
+            )
+        )
     if monitor_mode not in ("min", "max"):
-        raise ValueError("Given monitor mode '{}' is not supported.".format(
-            monitor_mode
-        ))
+        raise ValueError(f"Given monitor mode '{monitor_mode}' is not supported.")
     if max_epochs not in ("min", "max") and not isinstance(max_epochs, int):
-        raise ValueError("Given parameter max_epochs '{}' is not supported.".format(
-            max_epochs
-        ))
+        raise ValueError(f"Given parameter max_epochs '{max_epochs}' is not supported.")
     # If the histories are not provided as a list, we normalized it
     # to a list.
     if not isinstance(histories, list):
@@ -348,80 +363,87 @@ def plot_history(
     # If the path is not None, we prepare the directory where to
     # store the created image(s).
     if path is not None:
-        directory_name = os.path.dirname(path)
-        # The directory name may be an empty string.
-        if directory_name:
-            os.makedirs(directory_name, exist_ok=True)
+        if single_graphs:
+            os.makedirs(path, exist_ok=True)
+        else:
+            directory_name = os.path.dirname(path)
+            # The directory name may be an empty string.
+            if directory_name:
+                os.makedirs(directory_name, exist_ok=True)
 
     # Normalize the training histories.
-    histories = [
-        to_dataframe(history)._get_numeric_data()
-        for history in histories
+    df_histories: List[pd.DataFrame] = [
+        to_dataframe(history).select_dtypes(include="number") for history in histories
     ]
 
     # Filter out the epochs as required.
     if max_epochs in ("max", "min"):
-        epochs = [
-            len(history)
-            for history in histories
-        ]
+        epochs = [len(history) for history in df_histories]
         if max_epochs == "max":
             max_epochs = max(epochs)
 
         if max_epochs == "min":
             max_epochs = min(epochs)
 
-    histories = [
-        history[:max_epochs]
-        for history in histories
-    ]
+    df_histories = [history[:max_epochs] for history in df_histories]
 
     if len(histories) > 1:
-        grouped_histories = pd.concat(histories)
-        average_history = grouped_histories.groupby(grouped_histories.index).mean()
-        standard_deviation_history = grouped_histories.groupby(grouped_histories.index).std()
+        grouped_histories: pd.DataFrame = pd.concat(df_histories)
+        average_history: Optional[pd.DataFrame] = grouped_histories.groupby(
+            grouped_histories.index
+        ).mean()
+        standard_deviation_history: Optional[pd.DataFrame] = grouped_histories.groupby(
+            grouped_histories.index
+        ).std()
     else:
-        average_history = standard_deviation_history =  None
+        average_history = standard_deviation_history = None
 
     # If we want to plot informations relative to the monitored metrics
     if monitor is not None:
-        history_to_monitor = (
-            histories[0] if average_history is None else average_history)[monitor]
+        history_to_monitor: pd.Series = (
+            df_histories[0] if average_history is None else average_history
+        )[monitor]
         if monitor_mode == "max":
-            best_point_x = history_to_monitor.argmax()
+            best_point_x: Optional[int] = history_to_monitor.argmax()
         elif monitor_mode == "min":
             best_point_x = history_to_monitor.argmin()
     else:
         best_point_x = None
 
     if single_graphs:
-        return list(zip(*[
-            _plot_history(
-                filter_columns(histories, columns),
-                average_history,
-                standard_deviation_history,
-                style,
-                interpolate,
-                side,
-                graphs_per_row,
-                dpi,
-                customization_callback,
-                path = None if path is None else "{path}/{c}.png".format(path=path, c=columns[0]),
-                log_scale_metrics=log_scale_metrics,
-                show_standard_deviation=show_standard_deviation,
-                monitor=sanitize_ml_labels(
-                    monitor,
-                    custom_defaults=custom_defaults
-                ),
-                best_point_x=best_point_x,
-                title=title,
-                custom_defaults=custom_defaults,
+        return list(
+            zip(
+                *[
+                    _plot_history(
+                        filter_columns(df_histories, columns),
+                        average_history,
+                        standard_deviation_history,
+                        style,
+                        interpolate,
+                        side,
+                        graphs_per_row,
+                        dpi,
+                        customization_callback,
+                        path=(None if path is None else f"{path}/{columns[0]}.png"),
+                        log_scale_metrics=log_scale_metrics,
+                        show_standard_deviation=show_standard_deviation,
+                        monitor=cast(
+                            Optional[str],
+                            sanitize_ml_labels(
+                                monitor, custom_defaults=custom_defaults
+                            ),
+                        ),
+                        best_point_x=best_point_x,
+                        title=title,
+                        custom_defaults=custom_defaults,
+                    )
+                    for columns in get_column_tuples(df_histories[0])
+                ]
             )
-            for columns in get_column_tuples(histories[0])
-        ]))
+        )
     else:
         return _plot_history(
-            histories,
+            df_histories,
             average_history,
             standard_deviation_history,
             style,
@@ -434,9 +456,9 @@ def plot_history(
             log_scale_metrics=log_scale_metrics,
             show_standard_deviation=show_standard_deviation,
             show_average=show_average,
-            monitor=sanitize_ml_labels(
-                monitor,
-                custom_defaults=custom_defaults
+            monitor=cast(
+                Optional[str],
+                sanitize_ml_labels(monitor, custom_defaults=custom_defaults),
             ),
             best_point_x=best_point_x,
             title=title,
@@ -445,7 +467,15 @@ def plot_history(
 
 
 def show_history(
-    histories: Union[History, List[History], Dict[str, List[float]], pd.DataFrame, List[pd.DataFrame], str, List[str]],
+    histories: Union[
+        History,
+        List[History],
+        Dict[str, List[float]],
+        pd.DataFrame,
+        List[pd.DataFrame],
+        str,
+        List[str],
+    ],
     style: str = "-",
     interpolate: bool = False,
     side: float = 5,
@@ -461,8 +491,8 @@ def show_history(
     show_standard_deviation: bool = False,
     show_average: bool = True,
     title: Optional[str] = None,
-    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None
-) -> Tuple[Union[Figure, List[Figure]], Union[Axes, List[Axes]]]:
+    custom_defaults: Optional[Dict[str, Union[List[str], str]]] = None,
+) -> None:
     """Plot given training histories.
 
     Parameters

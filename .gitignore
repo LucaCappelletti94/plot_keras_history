@@ -15,3 +15,8 @@ build
 plot_keras_history.egg-info
 .coverage*
 htmlcov
+tests/test_readme.py
+dist
+singleton
+standard.png
+interpolated.png
