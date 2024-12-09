@@ -39,6 +39,7 @@ test_deps = [
     "compress_json",
     "pytest_readme",
     "keras",
+    "tensorflow",
     "extra_keras_metrics",
 ]
 

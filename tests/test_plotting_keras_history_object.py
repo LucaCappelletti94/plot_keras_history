@@ -1,16 +1,16 @@
+"""Test for the plot_keras_history function."""
 from keras.models import Sequential
 from keras.layers import Dense
-import pandas as pd
-import numpy as np
-import os
-from plot_keras_history import plot_history
 import matplotlib.pyplot as plt
 import matplotlib
+import numpy as np
+from plot_keras_history import plot_history
 
 matplotlib.use("Agg")
 
 
 def test_plotting_keras_history_object():
+    """Test if plot_history works correctly."""
     model = Sequential([Dense(1, activation="sigmoid")])
     model.compile(optimizer="nadam", loss="binary_crossentropy")
     X = np.random.uniform(size=(100, 100))

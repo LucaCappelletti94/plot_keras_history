@@ -1,8 +1,7 @@
 import pandas as pd
-import os
-from plot_keras_history import plot_history
 import matplotlib.pyplot as plt
 import matplotlib
+from plot_keras_history import plot_history
 
 matplotlib.use("Agg")
 

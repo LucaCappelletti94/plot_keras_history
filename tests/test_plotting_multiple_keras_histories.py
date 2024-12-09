@@ -3,15 +3,15 @@
 from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
-from plot_keras_history import plot_history
 from extra_keras_metrics import get_minimal_multiclass_metrics
-import matplotlib.pyplot as plt
 import matplotlib
+from plot_keras_history import plot_history
 
 matplotlib.use("Agg")
 
 
 def test_plotting_keras_history_object():
+    """Test if multiple histories plots look ok."""
     histories = []
     for _ in range(5):
         model = Sequential([Dense(1, activation="sigmoid")])
