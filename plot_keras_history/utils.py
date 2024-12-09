@@ -1,8 +1,9 @@
 """Utilities for the plot keras history package."""
+
 # type: ignore[no-redef]
 
 import math
-from typing import List, Dict, Union, Tuple, cast
+from typing import List, Dict, Union, Tuple, cast, TYPE_CHECKING
 import pandas as pd
 import numpy as np
 from scipy.signal import savgol_filter
@@ -15,10 +16,10 @@ try:
 
     # If the import fails, we create a wrapper class.
 except (ImportError, ModuleNotFoundError):
-
-    # pylint: disable=too-few-public-methods
-    class History:
-        """Dummy class to be used as a placeholder for the real History object."""
+    if not TYPE_CHECKING:
+        # pylint: disable=too-few-public-methods
+        class History:
+            """Dummy class to be used as a placeholder for the real History object."""
 
 
 def to_dataframe(history: Union[History, pd.DataFrame, Dict, str]) -> pd.DataFrame:
