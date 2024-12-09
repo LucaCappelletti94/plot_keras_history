@@ -1,7 +1,7 @@
 """Utilities for the plot keras history package."""
 
 import math
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Union, Tuple, cast
 import pandas as pd
 import numpy as np
 from scipy.signal import savgol_filter
@@ -16,7 +16,7 @@ try:
 except (ImportError, ModuleNotFoundError):
 
     # pylint: disable=too-few-public-methods
-    # mypy: ignore-errors
+    # type: ignore[no-redef]
     class History:
         """Dummy class to be used as a placeholder for the real History object."""
 
@@ -118,7 +118,7 @@ def filter_signal(y: np.ndarray, window: int = 17, polyorder: int = 3) -> np.nda
     if len(y) < window:
         return y
     # Otherwise we apply the savgol filter.
-    return savgol_filter(y, window, polyorder)
+    return cast(np.ndarray, savgol_filter(y, window, polyorder))
 
 
 def get_figsize(number_of_metrics: int, graphs_per_row: int) -> Tuple[int, int]:
