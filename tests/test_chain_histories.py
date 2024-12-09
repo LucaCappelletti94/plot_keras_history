@@ -1,4 +1,5 @@
 """Submodule for testing chain_histories function."""
+
 import json
 import pandas as pd
 from plot_keras_history import chain_histories

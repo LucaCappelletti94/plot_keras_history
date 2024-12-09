@@ -1,4 +1,5 @@
 """Test the plot_history function with a big history."""
+
 import pandas as pd
 import os
 from plot_keras_history import plot_history

@@ -1,4 +1,5 @@
 """Test for the plot_keras_history function."""
+
 from keras.models import Sequential
 from keras.layers import Dense
 import matplotlib.pyplot as plt

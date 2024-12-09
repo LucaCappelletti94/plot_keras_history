@@ -1,4 +1,5 @@
 """Tests for the package version."""
+
 from validate_version_code import validate_version_code
 from plot_keras_history.__version__ import __version__
 

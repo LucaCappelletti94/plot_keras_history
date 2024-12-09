@@ -1,4 +1,5 @@
 """Test submodule to check if singletons are plotted."""
+
 import os
 import matplotlib
 

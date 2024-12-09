@@ -1,4 +1,5 @@
 """Test submodule to check if show_history works correctly."""
+
 import matplotlib
 
 matplotlib.use("Agg")

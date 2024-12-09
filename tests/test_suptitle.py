@@ -1,4 +1,5 @@
 """Test submodule to check if suptitle is set correctly."""
+
 import pandas as pd
 import matplotlib
 from plot_keras_history import plot_history

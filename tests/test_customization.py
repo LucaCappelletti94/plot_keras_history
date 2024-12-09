@@ -1,4 +1,5 @@
 """Tests for the customization_callback parameter."""
+
 import matplotlib
 
 matplotlib.use("Agg")

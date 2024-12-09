@@ -1,4 +1,5 @@
 """Test submodule for plotting multiple histories."""
+
 import os
 import pandas as pd
 import matplotlib.pyplot as plt

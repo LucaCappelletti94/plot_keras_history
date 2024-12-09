@@ -1,4 +1,5 @@
 """Test submodule to check if warnings are raised."""
+
 import warnings
 import compress_json
 import matplotlib
