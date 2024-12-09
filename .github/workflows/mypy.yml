@@ -25,4 +25,4 @@ jobs:
           pip install mypy  # Ensure mypy is installed
 
       - name: Run MyPy
-        run: mypy environments_utils/
+        run: mypy plot_keras_history/
