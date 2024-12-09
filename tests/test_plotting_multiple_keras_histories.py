@@ -1,7 +1,7 @@
 """Test to check if multiple histories plots look ok."""
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+from keras.models import Sequential
+from keras.layers import Dense
 import numpy as np
 from plot_keras_history import plot_history
 from extra_keras_metrics import get_minimal_multiclass_metrics
