@@ -39,7 +39,7 @@ test_deps = [
     "compress_json",
     "pytest_readme",
     "keras",
-    "extra_keras_metrics"
+    "extra_keras_metrics",
 ]
 
 extras = {
